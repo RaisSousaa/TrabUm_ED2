@@ -1,0 +1,29 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include "stream.h"
+
+Stream *CriarArv()
+{
+    return NULL;
+}
+
+void InserirElemento(Stream **raiz, Stream *no) 
+{
+    if (!*raiz) // verifica se e nulo
+    // tem um ponteiro pois estou acessando o conteudo da no atual da arvore
+    {
+        *raiz = no; //A percorrer ate o nulo para adicionar o no
+    }
+    else
+    {
+        if (no->info.nomeStream < (*raiz)->info.nomeStream)
+        {
+            InserirElemento(&((*raiz)->esq), no);
+        }
+        else
+        {
+            InserirElemento(&((*raiz)->dir), no);
+        }
+    }
+}

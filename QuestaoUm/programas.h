@@ -20,7 +20,8 @@ typedef struct infoProgramas
     Periocidade periocidade;
     float duracao;
     float tempoInicio;
-
+    Gravacao gravacao;
+    char nomeApres[50];
 };
 
 typedef struct Programas

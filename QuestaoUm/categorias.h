@@ -1,6 +1,10 @@
 #ifndef CATEGORIAS_H
 #define CATEGORIAS_H
 
+#include "programas.h"
+
+typedef struct Programa programa;
+
 typedef enum Tipo {
     Esporte, 
     Noticia,
@@ -8,16 +12,11 @@ typedef enum Tipo {
     Cultura
 }Tipo;
 
-typedef struct InfoCategoria {
-    Tipo tipo;
-    
-
-}InfoCategoria;
-
 typedef struct Categorias
 {
-    InfoCategoria info;
-    
+    Tipo tipo;
+    char nomeCategoria[50];
+    Programas *programas;
 }Categorias;
 
 
