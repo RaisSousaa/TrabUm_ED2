@@ -22,7 +22,7 @@ typedef struct infoProgramas
     float tempoInicio;
     Gravacao gravacao;
     char nomeApres[50];
-};
+} infoProgramas;
 
 typedef struct Programas
 {
