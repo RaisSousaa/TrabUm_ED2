@@ -3,12 +3,33 @@
 #include<string.h>
 #include "programas.h"
 
+
+/* Helpers: enum -> string*/
+const char* getPeriocidadeStr(Periocidade p) 
+{
+    const char *res;
+    if (p == Diario)          res = "Diário";
+    else if (p == Semanal)    res = "Semanal";
+    else if (p == Mensal)     res = "Mensal";
+    else                      res = "Desconhecida";
+    return res;
+}
+
+const char* getGravacaoStr(Gravacao g) 
+{
+    const char *res;
+    if (g == AoVivo)          res = "Ao Vivo";
+    else if (g == SobDemanda) res = "Sob Demanda";
+    else                      res = "Desconhecida";
+    return res;
+}
+
 // Função para alocar memória para um novo programa
 Programas* alocarProgramas(infoProgramas dados) 
 {
     Programas *no;
     no = (Programas*) malloc (sizeof(Programas));
-    if (no) 
+    if (no == NULL) 
     {
         printf("Erro ao alocar memoria para Programas.\n");
         exit(1);
@@ -25,7 +46,7 @@ Programas* alocarProgramas(infoProgramas dados)
 
 
 // Preenche os dados do programa
-infoProgramas preencherDadosPrograma()
+infoProgramas preencherDadosPrograma(void)
 {
     infoProgramas dados;
     printf("Digite o nome do programa: "); scanf("%s", dados.nomePrograma); // recebe o nome do programa
@@ -72,46 +93,52 @@ infoProgramas preencherDadosPrograma()
     return dados; // retorna os dados preenchidos
 }
 
-//inserir dados na árvore organizado por nome apresentador
+//inserção de dados na árvore organizado por nome do programa e sem permitir nome repetido
+//pesquisei e vi que é mais eficaz fazer essa verificação na função
 int inserirProgramas(Programas **raizProgramas, Programas *no)
 {
     int cadastrado = 1;
 
-    if (*raizProgramas)
+    if (*raizProgramas == NULL)
     {
-        *raizProgramas = no; //Para inserir na Raiz
+        *raizProgramas = no; // insere na raiz/folha
     }
     else
     {
-        //verifica onde inserir pelo nome do programa
-        if (strcmp((*raizProgramas)->infoProgramas.nomeApresentador, no->infoProgramas.nomeApresentador) > 0)
+        int cmp = strcmp(no->infoProgramas.nomePrograma, (*raizProgramas)->infoProgramas.nomePrograma);
+
+        if (cmp < 0)
         {
             cadastrado = inserirProgramas(&(*raizProgramas)->esq, no);
         }
-        else if (strcmp((*raizProgramas)->infoProgramas.nomeApresentador, no->infoProgramas.nomeApresentador) < 0)
+        else if (cmp > 0)
         {
             cadastrado = inserirProgramas(&(*raizProgramas)->dir, no);
         }
         else
         {
-            cadastrado = 0; 
+            // DUPLICADO: mesmo nomePrograma
+            cadastrado = 0;
+            free(no);              // evita vazamento
+            // opcional: no = NULL; // não é necessário aqui
         }
     }
-    return(cadastrado);    
+    return cadastrado;
 }
 
-// Procura um album pelo titulo
-Programas *buscarProgramas(Programas *raiz, char *nomeProgramas)
+
+// Procura programa por nome
+Programas *buscarProgramas(Programas *raiz, const char *nomeProgramas)
 {
     Programas *encontrado;
     encontrado = NULL; 
     if (raiz != NULL)
     {
-        if(strcmp(raiz->infoProgramas.nomeApresentador, nomeProgramas) == 0)
+        if(strcmp(raiz->infoProgramas.nomePrograma, nomeProgramas) == 0)
         {
             encontrado = raiz; // encontra o Programas
         }
-        else if(strcmp(raiz->infoProgramas.nomeApresentador, nomeProgramas) > 0)
+        else if(strcmp(raiz->infoProgramas.nomePrograma, nomeProgramas) > 0)
         {
             encontrado = buscarProgramas(raiz->esq, nomeProgramas); // busca na subarvore esquerda
         } 
@@ -122,3 +149,25 @@ Programas *buscarProgramas(Programas *raiz, char *nomeProgramas)
     }
     return(encontrado); // retorna o Programas encontrado ou NULL se não encontrado
 }
+
+
+void mostrarProgramas(Programas *raiz)
+{
+    if (raiz != NULL)
+    {
+        mostrarProgramas(raiz->esq);
+
+        printf("--------------------------------------------------\n");
+        printf("Nome do programa : %s\n", raiz->infoProgramas.nomePrograma);
+        printf("Duração          : %.2fh\n", raiz->infoProgramas.duracao);
+        printf("Horário de início: %.2fh\n", raiz->infoProgramas.tempoInicio);
+        printf("Apresentador     : %s\n", raiz->infoProgramas.nomeApresentador);
+        printf("Periodicidade    : %s\n", getPeriocidadeStr(raiz->infoProgramas.periocidade));
+        printf("Tipo de gravação : %s\n", getGravacaoStr(raiz->infoProgramas.gravacao));
+
+        mostrarProgramas(raiz->dir);
+    }
+}
+
+
+//abaixo serão as funções de mostrar

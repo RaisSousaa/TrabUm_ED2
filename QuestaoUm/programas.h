@@ -30,8 +30,17 @@ typedef struct Programas
 {
 
     struct Programas *esq, *dir;
-    struct infoProgramas infoProgramas; // struct embutida
+    infoProgramas infoProgramas; // struct embutida
 }Programas;
 
+
+//Funções de programas
+const char* getPeriocidadeStr(Periocidade p);
+const char* getGravacaoStr(Gravacao g);
+Programas* alocarProgramas(infoProgramas dados) ;
+infoProgramas preencherDadosPrograma(void);
+int inserirProgramas(Programas **raizProgramas, Programas *no);
+Programas *buscarProgramas(Programas *raiz, const char *nomeProgramas);
+void mostrarProgramas(Programas *raiz);
 
 #endif
