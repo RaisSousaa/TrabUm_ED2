@@ -23,8 +23,8 @@ typedef struct infoProgramas
     float duracao;
     float tempoInicio;
     Gravacao gravacao;
-    char nomeApres[50];
-};
+    char nomeApresentador[50];
+}infoProgramas;
 
 typedef struct Programas
 {
