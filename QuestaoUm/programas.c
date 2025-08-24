@@ -4,7 +4,7 @@
 #include "programas.h"
 
 
-/* funções: faz com que a struct enum -> string*/
+/* Helpers: enum -> string*/
 const char* getPeriocidadeStr(Periocidade p) 
 {
     const char *res;
@@ -45,34 +45,14 @@ Programas* alocarProgramas(infoProgramas dados)
 }
 
 
-// função para limpar \n do fgets
-void limparNovaLinha(char *str) {
-    size_t len = strlen(str);
-    if (len > 0 && str[len-1] == '\n') {
-        str[len-1] = '\0';
-    }
-}
-
 // Preenche os dados do programa
 infoProgramas preencherDadosPrograma(void)
 {
     infoProgramas dados;
-
-    printf("Digite o nome do programa: ");
-    fgets(dados.nomePrograma, TAM_STRING, stdin);
-    limparNovaLinha(dados.nomePrograma);
-
-    printf("Digite a duracao do programa (em horas): ");
-    scanf("%f", &dados.duracao);
-
-    printf("Digite o tempo de inicio do programa (em horas): ");
-    scanf("%f", &dados.tempoInicio);
-
-    getchar(); // consome o \n que sobra do scanf anterior
-
-    printf("Digite o nome do apresentador: ");
-    fgets(dados.nomeApresentador, TAM_STRING, stdin);
-    limparNovaLinha(dados.nomeApresentador);
+    printf("Digite o nome do programa: "); scanf("%s", dados.nomePrograma); // recebe o nome do programa
+    printf("Digite a duracao do programa (em horas): "); scanf("%f", &dados.duracao); // recebe a duração
+    printf("Digite o tempo de inicio do programa (em horas): "); scanf("%f", &dados.tempoInicio); // recebe o tempo de início
+    printf("Digite o nome do apresentador: "); scanf("%s", dados.nomeApresentador); // recebe o nome do apresentador
 
     int periocidade;
     printf("Escolha a periocidade do programa:\n1. Diario\n2. Semanal\n3. Mensal\n");
@@ -110,10 +90,8 @@ infoProgramas preencherDadosPrograma(void)
             break;
     }
 
-    getchar(); 
-    return dados;
+    return dados; // retorna os dados preenchidos
 }
-
 
 //inserção de dados na árvore organizado por nome do programa e sem permitir nome repetido
 //pesquisei e vi que é mais eficaz fazer essa verificação na função
