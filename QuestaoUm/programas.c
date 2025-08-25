@@ -4,7 +4,7 @@
 #include "programas.h"
 
 
-/* Helpers: enum -> string*/
+/* Funções: enum -> string*/
 const char* getPeriocidadeStr(Periocidade p) 
 {
     const char *res;
