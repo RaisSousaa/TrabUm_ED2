@@ -12,10 +12,10 @@ Apresentadores* alocarApresentador(void)
     if (novo == NULL) {
         printf("Erro ao alocar memória!\n");
     }
-
-    //novo->data = valor;
     novo->ant = NULL;
     novo->prox = NULL;
+    novo->info.historico = NULL;   
+
     return novo;
 }
 
@@ -136,3 +136,114 @@ void imprimirApresentadores(Apresentadores *inicio)
 }
 
 //liberar memoria
+
+
+/* ==================== LISTA DO HISTÓRICO (streams passadas) ==================== */
+
+
+/* cria nó já pronto para uso */
+Historico* alocarHistorico(const InfoHistorico *dado)
+{
+    Historico *no = NULL;
+
+    no = (Historico*) malloc(sizeof(Historico));
+    if (no != NULL) {
+        no->info = *dado;   /* copia todos os campos */
+        no->prox = NULL;    /* já inicializa */
+    } else {
+        printf("Erro ao alocar memoria de Historico.\n");
+    }
+
+    return no; /* único return */
+}
+
+
+
+int inserirHistoricoOrdenado(Historico **inicio, const InfoHistorico *dado)
+{
+    int ret = 0; /* 0 = não inseriu (duplicata ou erro), 1 = inseriu */
+    int ehDuplicata = 0;
+    Historico *novo = NULL;
+
+    if (inicio != NULL && dado != NULL) {
+        Historico *atual = *inicio;
+        Historico *anterior = NULL;
+
+        /* Avança até encontrar ponto de inserção (ordem por nome) */
+        while (atual != NULL && strcmp(atual->info.nomeStream, dado->nomeStream) < 0) {
+            anterior = atual;
+            atual = atual->prox;
+        }
+
+        /* Dentro do bloco de mesmo nome, checa duplicata */
+        while (atual != NULL &&
+               strcmp(atual->info.nomeStream, dado->nomeStream) == 0 &&
+               ehDuplicata == 0) {
+
+            if (atual->info.dataInicio  == dado->dataInicio &&
+                atual->info.dataTermino == dado->dataTermino) {
+                ehDuplicata = 1;
+            } else {
+                anterior = atual;
+                atual = atual->prox;
+            }
+        }
+
+        if (ehDuplicata == 0) {
+            novo = alocarHistorico((InfoHistorico *)dado);
+            if (novo != NULL) {
+                /* Insere entre 'anterior' e 'atual' */
+                novo->prox = atual;
+                if (anterior != NULL) {
+                    anterior->prox = novo;
+                } else {
+                    *inicio = novo;
+                }
+                ret = 1; /* inserção bem sucedida */
+            } else {
+                /* falha malloc → ret fica 0 */
+            }
+        }
+        /* se duplicata, ret continua 0 */
+    }
+
+    return ret; /* único return */
+}
+
+
+
+/* imprime a lista do histórico — sem returns (void) */
+void imprimirHistorico(const Historico *inicio)
+{
+    const Historico *p = inicio;
+
+    if (p == NULL) {
+        printf("  (sem historico)\n");
+    } else {
+        while (p != NULL) {
+            /* datas são int (AAAAMMDD). Ajuste o formato se mudar o tipo. */
+            printf("  - %s | inicio: %d | fim: %d\n",
+                   p->info.nomeStream, p->info.dataInicio, p->info.dataTermino);
+            p = p->prox;
+        }
+    }
+    /* sem return */
+}
+
+/* libera TODA a lista do histórico — sem returns (void) */
+void liberarHistorico(Historico **inicio)
+{
+    Historico *p = NULL;
+    Historico *prox = NULL;
+
+    if (inicio != NULL) {
+        p = *inicio;
+        while (p != NULL) {
+            prox = p->prox;
+            free(p);
+            p = prox;
+        }
+        *inicio = NULL;
+    }
+    /* sem return */
+}
