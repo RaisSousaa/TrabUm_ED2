@@ -46,6 +46,7 @@ Programas* alocarProgramas(infoProgramas dados)
 
 
 // Preenche os dados do programa
+//ideal que preencha na main, ta aqui por enquanto, isso para evitar printf e scanf em funções
 infoProgramas preencherDadosPrograma(void)
 {
     infoProgramas dados;
