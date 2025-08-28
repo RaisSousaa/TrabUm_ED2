@@ -4,25 +4,25 @@
 #include "programas.h"
 
 
-/* Funções: enum -> string*/
-const char* getPeriocidadeStr(Periocidade p) 
-{
-    const char *res;
-    if (p == Diario)          res = "Diário";
-    else if (p == Semanal)    res = "Semanal";
-    else if (p == Mensal)     res = "Mensal";
-    else                      res = "Desconhecida";
-    return res;
-}
+// /* Funções: enum -> string*/
+// const char* getPeriocidadeStr(Periocidade p) 
+// {
+//     const char *res;
+//     if (p == Diario)          res = "Diário";
+//     else if (p == Semanal)    res = "Semanal";
+//     else if (p == Mensal)     res = "Mensal";
+//     else                      res = "Desconhecida";
+//     return res;
+// }
 
-const char* getGravacaoStr(Gravacao g) 
-{
-    const char *res;
-    if (g == AoVivo)          res = "Ao Vivo";
-    else if (g == SobDemanda) res = "Sob Demanda";
-    else                      res = "Desconhecida";
-    return res;
-}
+// const char* getGravacaoStr(Gravacao g) 
+// {
+//     const char *res;
+//     if (g == AoVivo)          res = "Ao Vivo";
+//     else if (g == SobDemanda) res = "Sob Demanda";
+//     else                      res = "Desconhecida";
+//     return res;
+// }
 
 // Função para alocar memória para um novo programa
 Programas* alocarProgramas(infoProgramas dados) 
@@ -163,8 +163,8 @@ void mostrarProgramas(Programas *raiz)
         printf("Duração          : %.2fh\n", raiz->infoProgramas.duracao);
         printf("Horário de início: %.2fh\n", raiz->infoProgramas.tempoInicio);
         printf("Apresentador     : %s\n", raiz->infoProgramas.nomeApresentador);
-        printf("Periodicidade    : %s\n", getPeriocidadeStr(raiz->infoProgramas.periocidade));
-        printf("Tipo de gravação : %s\n", getGravacaoStr(raiz->infoProgramas.gravacao));
+        printf("Periodicidade    : %d\n", raiz->infoProgramas.periocidade);
+        printf("Tipo de gravação : %d\n", raiz->infoProgramas.gravacao);
 
         mostrarProgramas(raiz->dir);
     }
