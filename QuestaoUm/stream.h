@@ -7,7 +7,7 @@ typedef struct Categoria Categoria;
 
 typedef struct InfoStream
 {
-    int nomeStream;
+    char nomeStream[50];
     char nomeSite[50];
 }InfoStream;
 

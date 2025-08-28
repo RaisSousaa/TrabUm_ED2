@@ -8,6 +8,32 @@ Stream *CriarArv()
     return NULL;
 }
 
+Stream *alocarNoStream(InfoStream stream)
+{
+    Stream *no = (Stream*) malloc(sizeof(Stream));
+    if (no == NULL)
+    {
+        printf("Erro ao alocar memoria\n");
+
+    }
+    else
+    {
+        no->dir = NULL;
+        no->esq = NULL;
+        no->info = stream;
+    }
+    return no;
+}
+
+InfoStream preencherDadosStream()
+{
+    InfoStream dados;
+    printf("Digite o nome da Stream:\n");
+    scanf("%s", dados.nomeStream);
+    return dados;
+}
+
+
 void InserirElemento(Stream **raiz, Stream *no) 
 {
     if (!*raiz) // verifica se e nulo
@@ -17,6 +43,11 @@ void InserirElemento(Stream **raiz, Stream *no)
     }
     else
     {
+        if ()
+        {
+            /* code */
+        }
+        
         if (no->info.nomeStream < (*raiz)->info.nomeStream)
         {
             InserirElemento(&((*raiz)->esq), no);
@@ -27,3 +58,4 @@ void InserirElemento(Stream **raiz, Stream *no)
         }
     }
 }
+
