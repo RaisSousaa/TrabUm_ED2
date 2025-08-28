@@ -4,25 +4,6 @@
 #include "programas.h"
 
 
-// /* Funções: enum -> string*/
-// const char* getPeriocidadeStr(Periocidade p) 
-// {
-//     const char *res;
-//     if (p == Diario)          res = "Diário";
-//     else if (p == Semanal)    res = "Semanal";
-//     else if (p == Mensal)     res = "Mensal";
-//     else                      res = "Desconhecida";
-//     return res;
-// }
-
-// const char* getGravacaoStr(Gravacao g) 
-// {
-//     const char *res;
-//     if (g == AoVivo)          res = "Ao Vivo";
-//     else if (g == SobDemanda) res = "Sob Demanda";
-//     else                      res = "Desconhecida";
-//     return res;
-// }
 
 // Função para alocar memória para um novo programa
 Programas* alocarProgramas(infoProgramas dados) 
