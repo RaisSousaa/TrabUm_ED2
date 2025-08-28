@@ -19,9 +19,7 @@ Apresentadores* alocarApresentador(void)
     return novo;
 }
 
-
 // Preenche dados de apresentador
-// Preenche os dados do programa
 //colocar para preencher no main, aqui ta por enquanto para teste
 InfoApresentador preencherDadosApresentador(void)
 {
@@ -56,194 +54,101 @@ InfoApresentador preencherDadosApresentador(void)
     return dados; // retorna os dados preenchidos
 }
 
-
 // Lista ordenada dinamicamente duplamente encadeada
 //Inserção ordenada por nome do apresentador
 int inserirApresentador(Apresentadores **inicio, Apresentadores *novo)
 {
-    int ret = 0; // valor de retorno: 0 = não inseriu, 1 = inseriu
+    int cadastro = 0; // 0 = não inseriu, 1 = inseriu
 
-    if (inicio && novo && novo->info.nome[0] != '\0') {
-        novo->ant = NULL;
-        novo->prox = NULL;
+    if (inicio != NULL && novo != NULL && novo->info.nome[0] != '\0') {
 
-        Apresentadores *atual = *inicio;
-        Apresentadores *anterior = NULL;
-
-        while (atual != NULL && strcmp(atual->info.nome, novo->info.nome) < 0) {
-            anterior = atual;
-            atual = atual->prox;
+        if (*inicio == NULL) {
+            /* Caso base: lista vazia → insere aqui */
+            novo->ant = NULL;
+            novo->prox = NULL;
+            *inicio = novo;
+            cadastro = 1;
         }
+        else {
+            int cmp = strcmp((*inicio)->info.nome, novo->info.nome);
 
-        if (atual != NULL && strcmp(atual->info.nome, novo->info.nome) == 0) {
-            ret = 0; // duplicado → não insere
-        } else {
-            novo->ant = anterior;
-            novo->prox = atual;
+            if (cmp > 0) {
+                /* Inserir ANTES do nó atual (*inicio) */
+                novo->ant  = (*inicio)->ant;  // pode ser NULL se era cabeça
+                novo->prox = *inicio;
+                (*inicio)->ant = novo;
 
-            if (anterior) anterior->prox = novo;
-            else          *inicio = novo;
-
-            if (atual)   atual->ant = novo;
-
-            ret = 1; // inserção OK
+                *inicio = novo; // conecta no lugar certo (início ou meio)
+                cadastro = 1;
+            }
+            else if (cmp == 0) {
+                /* Duplicata → não insere; cadastro continua 0 */
+            }
+            else { /* cmp < 0 → recursão no próximo */
+                cadastro = inserirApresentador(&(*inicio)->prox, novo);
+            }
         }
     }
 
-    return ret; 
+    return cadastro; 
 }
-
 
 //buscar
-Apresentadores* buscarApresentadores(Apresentadores *inicio, const char *nome_busca, int *flag)
+Apresentadores* buscarApresentadores(Apresentadores *inicio, const char *nome_busca, int *encontrou)
 {
-    Apresentadores *resultado = NULL; 
-    int achou = 0;
+    Apresentadores *resultado = NULL;
 
-    if (flag) *flag = 0;
+    if (encontrou != NULL) {
+        *encontrou = 0; // estado inicial: não encontrou
+    }
 
     if (nome_busca != NULL) {
-        Apresentadores *atual = inicio;
-
-        while (atual != NULL && !achou) {
-            if (strcmp(atual->info.nome, nome_busca) == 0) {
-                resultado = atual;
-                achou = 1;
-                if (flag) *flag = 1;
+        if (inicio != NULL) {
+            if (strcmp(inicio->info.nome, nome_busca) == 0) {
+                resultado = inicio;
+                if (encontrou != NULL) {
+                    *encontrou = 1;
+                }
             } else {
-                atual = atual->prox;
+                // chama recursivamente no próximo nó
+                resultado = buscarApresentadores(inicio->prox, nome_busca, encontrou);
             }
         }
     }
 
-    return resultado; 
+    return resultado; // único ponto de saída
 }
-
-
 
 //mostrar
-void imprimirApresentadores(Apresentadores *inicio) 
+void imprimirApresentadores(Apresentadores *inicio)
 {
-    Apresentadores *atual = inicio;
-    while (atual) {
-        printf("Nome Apresentador: %s | Stream Atual: %s | Categoria que Trabalha: %d\n",
-               atual->info.nome,
-               atual->info.streamAtual,
-               atual->info.ondeTrabalha);
-
-        atual = atual->prox;
+    if (inicio == NULL) {
+        return; // lista vazia → nada a imprimir (mesmo comportamento da sua versão)
     }
+
+    printf("Nome Apresentador: %s | Stream Atual: %s | Categoria que Trabalha: %d\n",
+           inicio->info.nome,
+           inicio->info.streamAtual,
+           inicio->info.ondeTrabalha);
+
+    imprimirApresentadores(inicio->prox); // imprime o resto
 }
 
-//liberar memoria
-
-
-/* ==================== LISTA DO HISTÓRICO (streams passadas) ==================== */
-
-
-/* cria nó já pronto para uso */
-Historico* alocarHistorico(const InfoHistorico *dado)
+void liberarApresentadores(Apresentadores **inicio)
 {
-    Historico *no = NULL;
+    if (inicio != NULL && *inicio != NULL) {
+        // libera primeiro o histórico do nó atual (se houver)
+        if ((*inicio)->info.historico != NULL) {
+            liberarHistorico(&(*inicio)->info.historico);
+        }
 
-    no = (Historico*) malloc(sizeof(Historico));
-    if (no != NULL) {
-        no->info = *dado;   /* copia todos os campos */
-        no->prox = NULL;    /* já inicializa */
-    } else {
-        printf("Erro ao alocar memoria de Historico.\n");
+        // libera recursivamente a cauda
+        liberarApresentadores(&(*inicio)->prox);
+
+        // libera o nó atual
+        free(*inicio);
+        *inicio = NULL; // garante que o ponteiro fique nulo ao voltar
+    } else if (inicio != NULL) {
+        *inicio = NULL; // normaliza se já vier NULL
     }
-
-    return no; /* único return */
-}
-
-
-
-int inserirHistoricoOrdenado(Historico **inicio, const InfoHistorico *dado)
-{
-    int ret = 0; /* 0 = não inseriu (duplicata ou erro), 1 = inseriu */
-    int ehDuplicata = 0;
-    Historico *novo = NULL;
-
-    if (inicio != NULL && dado != NULL) {
-        Historico *atual = *inicio;
-        Historico *anterior = NULL;
-
-        /* Avança até encontrar ponto de inserção (ordem por nome) */
-        while (atual != NULL && strcmp(atual->info.nomeStream, dado->nomeStream) < 0) {
-            anterior = atual;
-            atual = atual->prox;
-        }
-
-        /* Dentro do bloco de mesmo nome, checa duplicata */
-        while (atual != NULL &&
-               strcmp(atual->info.nomeStream, dado->nomeStream) == 0 &&
-               ehDuplicata == 0) {
-
-            if (atual->info.dataInicio  == dado->dataInicio &&
-                atual->info.dataTermino == dado->dataTermino) {
-                ehDuplicata = 1;
-            } else {
-                anterior = atual;
-                atual = atual->prox;
-            }
-        }
-
-        if (ehDuplicata == 0) {
-            novo = alocarHistorico((InfoHistorico *)dado);
-            if (novo != NULL) {
-                /* Insere entre 'anterior' e 'atual' */
-                novo->prox = atual;
-                if (anterior != NULL) {
-                    anterior->prox = novo;
-                } else {
-                    *inicio = novo;
-                }
-                ret = 1; /* inserção bem sucedida */
-            } else {
-                /* falha malloc → ret fica 0 */
-            }
-        }
-        /* se duplicata, ret continua 0 */
-    }
-
-    return ret; /* único return */
-}
-
-
-
-/* imprime a lista do histórico — sem returns (void) */
-void imprimirHistorico(const Historico *inicio)
-{
-    const Historico *p = inicio;
-
-    if (p == NULL) {
-        printf("  (sem historico)\n");
-    } else {
-        while (p != NULL) {
-            /* datas são int (AAAAMMDD). Ajuste o formato se mudar o tipo. */
-            printf("  - %s | inicio: %d | fim: %d\n",
-                   p->info.nomeStream, p->info.dataInicio, p->info.dataTermino);
-            p = p->prox;
-        }
-    }
-    /* sem return */
-}
-
-/* libera TODA a lista do histórico — sem returns (void) */
-void liberarHistorico(Historico **inicio)
-{
-    Historico *p = NULL;
-    Historico *prox = NULL;
-
-    if (inicio != NULL) {
-        p = *inicio;
-        while (p != NULL) {
-            prox = p->prox;
-            free(p);
-            p = prox;
-        }
-        *inicio = NULL;
-    }
-    /* sem return */
 }

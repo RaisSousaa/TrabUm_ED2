@@ -43,11 +43,6 @@ void InserirElemento(Stream **raiz, Stream *no)
     }
     else
     {
-        if ()
-        {
-            /* code */
-        }
-        
         if (no->info.nomeStream < (*raiz)->info.nomeStream)
         {
             InserirElemento(&((*raiz)->esq), no);
