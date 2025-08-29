@@ -3,6 +3,8 @@
 
 #define TAM_STRING 50
 
+
+//lista historico apresentador
 typedef struct InfoHistorico
 {
     char nomeStream[50];
@@ -17,9 +19,7 @@ typedef struct Historico
 }Historico;
 
 
-
-
-//lista 1
+//lista apresentador
 typedef enum Categoria 
 {
     Esporte = 1, 
@@ -50,21 +50,22 @@ typedef struct Apresentadores
 Apresentadores* alocarApresentador(void) ;
 InfoApresentador preencherDadosApresentador(void);
 int inserirApresentador(Apresentadores **inicio, Apresentadores *novo);
-Apresentadores* buscarApresentadores(Apresentadores *inicio, const char *nome_busca, int *flag);
+Apresentadores* buscarApresentadores(Apresentadores *inicio, const char *nome_busca, int *encontrou);
 void imprimirApresentadores(Apresentadores *inicio);
-static void limparEntrada(void) ;
-static void liberarApresentadores(Apresentadores **inicio) ;
+void liberarApresentadores(Apresentadores **inicio);
+
 
 // ===== Funções da lista de histórico  ===== 
 Historico* alocarHistorico(const InfoHistorico *dado);
-int inserirHistoricoOrdenado(Historico **inicio, const InfoHistorico *dado); 
+int inserirHistorico(Historico **inicio, const InfoHistorico *dado);
 void imprimirHistorico(const Historico *inicio);
-void liberarHistorico(Historico **inicio);
+void liberarHistorico(Historico **inicio) ;
+
+
 
 //funções do main
 static void limparEntrada(void) ;
 static int lerLinha(char *buf, size_t tam);
-
 
 
 

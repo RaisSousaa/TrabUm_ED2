@@ -71,6 +71,7 @@ int InserirStream(Stream **raiz, Stream *no)
     }
     else
     {
+
         int compara = strcmp(no->info.nomeStream, (*raiz)->info.nomeStream);
 
         if (compara < 0)
@@ -131,6 +132,7 @@ int remover(struct Stream **raiz, char *stream_remove) {
                     remover(&(*raiz)->esq, Mesq->info.nomeStream);
                 }
             }
+
         }
     }
     return 0;

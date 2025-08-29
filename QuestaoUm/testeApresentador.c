@@ -32,21 +32,6 @@ static int lerLinha(char *buf, size_t tam)
     return 1;
 }
 
-/* liberar memória da lista (bom pra não vazar no teste) */
-static void liberarApresentadores(Apresentadores **inicio) 
-{
-    Apresentadores *atual = (inicio ? *inicio : NULL);
-    while (atual) {
-        /* libera a lista de historico de cada apresentador, se existir */
-        if (atual->info.historico) {
-            liberarHistorico(&atual->info.historico);
-        }
-        Apresentadores *prox = atual->prox;
-        free(atual);
-        atual = prox;
-    }
-    if (inicio) *inicio = NULL;
-}
 
 
 /* =================== main com o novo caso 4 =================== */
@@ -194,7 +179,7 @@ int main(void) {
                         limparEntrada();
 
                         /* insere ordenado no historico do apresentador */
-                        int ok = inserirHistoricoOrdenado(&res->info.historico, &ih);
+                        int ok = inserirHistorico(&res->info.historico, &ih);
                         if (ok == 1) {
                             printf("Historico inserido.\n");
                         } else {

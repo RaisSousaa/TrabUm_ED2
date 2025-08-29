@@ -53,7 +53,7 @@ int main() {
                     printf("Programa %s encontrado!\n",
                            resultado->infoProgramas.nomePrograma);
                 } else {
-                    printf("Programa '%s' não encontrado. Verifique a grafia.\n", nome);
+                    printf("Programa '%s' não encontrado.\n", nome);
                 }
                 break;
             }
