@@ -3,6 +3,11 @@
 #include<string.h>
 #include "categorias.h"
 
+Categorias *criarCategoria()
+{
+    return NULL;
+}
+
 void prencherCategoria(Categorias *no){
     int escolha = 0;
     
@@ -81,7 +86,32 @@ void mostrarCategorias(Categorias *lista)
 
     Categorias *aux = lista;
     do {
-        printf("Categoria: %d\n", aux->tipo);
+        printf("Categoria: %s\n", tipos_char[aux->tipo - 1]);
         aux = aux->prox;
     } while (aux != lista);
 }
+
+Categorias *buscarCategoria(Categorias *categoria, char *buscarCat)
+{
+    Categorias *aux = criarCategoria();
+
+    if (categoria)
+    {
+        aux = categoria;
+
+        do
+        {
+            if (strcmp(aux->nomeCategoria, buscarCat) == 0)
+                break;
+            aux = aux->prox;
+
+        } while (aux != categoria);
+
+        if (strcmp(aux->nomeCategoria, buscarCat) != 0)
+            aux = NULL;
+    }
+
+    return aux;
+}
+
+

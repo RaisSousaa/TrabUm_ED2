@@ -26,29 +26,6 @@ Stream *alocarNoStream(InfoStream stream)
 }
 
 
-// int buscarStream(Stream *raiz, char nomedastream)
-// {
-//     int retorno = 0;
-//     if (raiz)
-//     {
-//         int compara = strcpy(nomedastream, raiz->info.nomeStream);
-
-//         if (compara == 0) {
-//             retorno = 1;
-//         } 
-//         else if (compara < 0) 
-//         {
-//             buscarStream(raiz->esq, nomedastream);
-//         } 
-//         else if (compara > 0)
-//         {
-//             buscarStream(raiz->dir, nomedastream);
-//         }
-//     }
-    
-//     return retorno;
-// }
-
 InfoStream preencherDadosStream()
 {
     InfoStream dados;
@@ -86,7 +63,8 @@ int InserirStream(Stream **raiz, Stream *no)
 
 int ehFolha(Stream *raiz) {
     return (raiz->esq == NULL && raiz->dir == NULL);
-}
+}// vi) Mostrar todas as categorias cadastradas para uma determinada stream.
+
 
 Stream *soUmFilho(Stream *no) {
     if (no->esq == NULL && no->dir != NULL) {
@@ -138,40 +116,124 @@ int remover(struct Stream **raiz, char *stream_remove) {
     return 0;
 }
 
+// v) Mostrar todas as streams cadastradas.
+void mostrarStreams(Stream *raiz)
+{
+    if (raiz)
+    {
+        mostrarStreams(raiz->esq);
+        printf("Stream: %s\n", raiz->info.nomeStream);
+        mostrarStreams(raiz->dir);
+    }
+}
 
+Stream *buscarStream(Stream *raiz, char nomedastream)
+{
+    int retorno = 0;
+    Stream *aux = raiz;
+    if (raiz)
+    {
+        int compara = strcpy(nomedastream, aux->info.nomeStream);
+
+        if (compara == 0) {
+            retorno = 1;
+        } 
+        else if (compara < 0) 
+        {
+            buscarStream(aux->esq, nomedastream);
+        } 
+        else if (compara > 0)
+        {
+            buscarStream(aux->dir, nomedastream);
+        }
+    }
+    return aux;
+}
+
+// vi) Mostrar todas as categorias cadastradas para uma determinada stream.
+void mostrarCategoriasStream(Stream *raiz, char *nomeStream)
+{
+    if (raiz)
+    {
+        int compara = strcmp(raiz->info.nomeStream, nomeStream);
+
+        if (compara == 0)
+        {
+            mostrarCategorias(raiz->info.categoria);
+        }
+        else if (compara < 0)
+        {
+            mostrarCategoriasStream(raiz->esq, nomeStream);
+        }
+        else
+        {
+            mostrarCategoriasStream(raiz->dir, nomeStream);
+        }
+    }    
+}
+
+// vii) Mostrar todos os programas de uma determinada categoria de uma determinada stream.
+void mostrarProgDeCatDeStream(Categorias *categoria, Stream *stream, char nomeCategoria, char nomeStream, Programas *programas)
+{
+    if (stream)
+    {
+        Stream *streamBuscada = buscarStream(stream->info.nomeStream, nomeStream);
+        
+        if (streamBuscada->info.categoria)
+        {
+            Categorias *categoriaBuscada = buscarCategoria(categoria->nomeCategoria, nomeCategoria);
+
+            if (categoriaBuscada->programas)
+            {
+                mostrarProgramas(programas);
+            }   
+        }
+    }
+}
+
+// viii)Mostrar todas as streams que tem uma determinada categoria.
+void mostrarStreamDeCategoria(Stream *stream, Categorias *categoria, char nomeDaCategoria)
+{
+    if (categoria)
+    {
+        Categorias *categoriaBuscada = buscarCategoria(categoria, nomeDaCategoria);
+        
+    }
+    
+}
 // declara as funções que você já tem
 
-void imprimirInOrdem(Stream *raiz) {
-    if (raiz != NULL) {
-        imprimirInOrdem(raiz->esq);
-        printf("Stream: %s | Site: %s\n", raiz->info.nomeStream, raiz->info.nomeSite);
-        imprimirInOrdem(raiz->dir);
-    }
-}
+// void imprimirInOrdem(Stream *raiz) {
+//     if (raiz != NULL) {
+//         imprimirInOrdem(raiz->esq);
+//         printf("Stream: %s | Site: %s\n", raiz->info.nomeStream, raiz->info.nomeSite);
+//         imprimirInOrdem(raiz->dir);
+//     }
+// }
 
-int main() {
-    Stream *raiz = CriarStream();
+// int main() {
+//     Stream *raiz = CriarStream();
 
-    // Inserir 3 streams
-    printf("=== Inserindo Streams ===\n");
-    for (int i = 0; i < 5; i++) {
-        InfoStream dados = preencherDadosStream();
-        Stream *no = alocarNoStream(dados);
-        InserirStream(&raiz, no);
-    }
+//     // Inserir 3 streams
+//     printf("=== Inserindo Streams ===\n");
+//     for (int i = 0; i < 5; i++) {
+//         InfoStream dados = preencherDadosStream();
+//         Stream *no = alocarNoStream(dados);
+//         InserirStream(&raiz, no);
+//     }
 
-    printf("\n--- Árvore em ordem (alfabética) ---\n");
-    imprimirInOrdem(raiz);
+//     printf("\n--- Árvore em ordem (alfabética) ---\n");
+//     imprimirInOrdem(raiz);
 
-    // Remover uma stream
-    char nomeRemover[50];
-    printf("\nDigite o nome da Stream para remover: ");
-    scanf("%s", nomeRemover);
+//     // Remover uma stream
+//     char nomeRemover[50];
+//     printf("\nDigite o nome da Stream para remover: ");
+//     scanf("%s", nomeRemover);
 
-    remover(&raiz, nomeRemover);
+//     remover(&raiz, nomeRemover);
 
-    printf("\n--- Árvore após remoção ---\n");
-    imprimirInOrdem(raiz);
+//     printf("\n--- Árvore após remoção ---\n");
+//     imprimirInOrdem(raiz);
 
-    return 0;
-}
+//     return 0;
+// }
