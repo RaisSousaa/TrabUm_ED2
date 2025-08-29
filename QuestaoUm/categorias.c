@@ -40,19 +40,26 @@ void inserirCategoria(Categorias **lista, Categorias *no)
     if (*lista == NULL)
     {
         *lista = no;
-        (*lista)->prox = *lista;
+        no->prox = no;
+        return;
     }
 
-    else
-    {
-        Categorias *aux = *lista;
-        while (aux->prox != *lista)
-        {
-            aux = aux->prox;
-        }
-        aux->prox = no;
-        no->prox = *lista;
-    }
+    Categorias *aux = *lista;
+
+    // percorre todos os nós para checar duplicata
+    do {
+        if (strcmp(aux->nomeCategoria, no->nomeCategoria) == 0)
+            return; // categoria já existe, não insere
+        aux = aux->prox;
+    } while (aux != *lista);
+
+    // se não encontrou duplicata, insere no final
+    aux = *lista;
+    while (aux->prox != *lista)
+        aux = aux->prox;
+
+    aux->prox = no;
+    no->prox = *lista;
 }
 
 Categorias *alocarMemoriaNo()
