@@ -17,4 +17,11 @@ typedef struct Stream{
     Categoria *categoria;
 }Stream;
 
+Stream *CriarStream();
+Stream *alocarNoStream(InfoStream stream);
+InfoStream preencherDadosStream();
+int InserirStream(Stream **raiz, Stream *no);
+int remover(struct Stream **raiz, char *stream_remove);
+
+
 #endif
