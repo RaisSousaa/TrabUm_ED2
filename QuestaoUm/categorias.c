@@ -89,18 +89,17 @@ Categorias *alocarMemoriaNo()
 
 void mostrarCategorias(Categorias *lista)
 {
-    if (lista == NULL) {
-        printf("Lista vazia!\n");
-    } 
-    else 
+    if (lista) 
     {
         Categorias *aux = lista;
         do {
-            printf("Categoria: %s\n", lista->nomeCategoria);
+            printf("Categoria: %s\n", aux->nomeCategoria);
             aux = aux->prox;
         } while (aux != lista);
     }
 }
+
+
 Categorias *buscarCategoria(Categorias *categoria, char *buscarCat)
 {
     Categorias *aux = NULL;
@@ -159,4 +158,55 @@ void removerCategoria(Categorias **categoria, char *nomeCategoria)
         }
         free(atual);
     }
+}
+
+
+int main() {
+    Categorias *lista = criarCategoria();
+
+    // Criar primeira categoria
+    Categorias *c1 = alocarMemoriaNo();
+    strcpy(c1->nomeCategoria, "Esporte");
+    c1->tipo = Esporte;
+    inserirCategoria(&lista, c1);
+
+    // Criar segunda categoria
+    Categorias *c2 = alocarMemoriaNo();
+    strcpy(c2->nomeCategoria, "Noticia");
+    c2->tipo = Noticia;
+    inserirCategoria(&lista, c2);
+
+    // Criar terceira categoria
+    Categorias *c3 = alocarMemoriaNo();
+    strcpy(c3->nomeCategoria, "Cultura");
+    c3->tipo = Cultura;
+    inserirCategoria(&lista, c3);
+
+    printf("\n--- Categorias inseridas ---\n");
+    mostrarCategorias(lista);
+
+    // Buscar categoria
+    char buscar[] = "Noticia";
+    Categorias *achada = buscarCategoria(lista, buscar);
+    if (achada != NULL) {
+        printf("\nCategoria encontrada: %s\n", achada->nomeCategoria);
+    } else {
+        printf("\nCategoria '%s' não encontrada.\n", buscar);
+    }
+
+    // Remover categoria
+    printf("\nRemovendo categoria 'Esporte'...\n");
+    removerCategoria(&lista, "Esporte");
+
+    printf("\n--- Lista após remoção ---\n");
+    mostrarCategorias(lista);
+
+    // Remover categoria inexistente
+    printf("\nTentando remover 'Inexistente'...\n");
+    removerCategoria(&lista, "Inexistente");
+
+    printf("\n--- Lista final ---\n");
+    mostrarCategorias(lista);
+
+    return 0;
 }
