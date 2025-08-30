@@ -13,12 +13,7 @@ typedef enum Tipo {
     Cultura
 }Tipo;
 
-const char *tipos_char = {
-    "Esporte",
-    "Noticia",
-    "Entreterimento",
-    "Cultura"
-};
+extern char *tipos_char[];
 
 typedef struct Categorias
 {
@@ -28,6 +23,7 @@ typedef struct Categorias
     Programas *programas;
 }Categorias;
 
+Categorias *criarCategoria();
 void prencherCategoria(Categorias *no);
 void inserirCategoria(Categorias **lista, Categorias *no);
 Categorias *alocarMemoriaNo();

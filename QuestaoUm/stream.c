@@ -127,13 +127,13 @@ void mostrarStreams(Stream *raiz)
     }
 }
 
-Stream *buscarStream(Stream *raiz, char nomedastream)
+Stream *buscarStream(Stream *raiz, char *nomedastream)
 {
     int retorno = 0;
     Stream *aux = raiz;
     if (raiz)
     {
-        int compara = strcpy(nomedastream, aux->info.nomeStream);
+        int compara = strcmp(nomedastream, aux->info.nomeStream);
 
         if (compara == 0) {
             retorno = 1;
@@ -172,16 +172,17 @@ void mostrarCategoriasStream(Stream *raiz, char *nomeStream)
     }    
 }
 
+
 // vii) Mostrar todos os programas de uma determinada categoria de uma determinada stream.
-void mostrarProgDeCatDeStream(Categorias *categoria, Stream *stream, char nomeCategoria, char nomeStream, Programas *programas)
+void mostrarProgDeCatDeStream(Categorias *categoria, Stream *stream, char *nomeCategoria, char *nomeStream, Programas *programas)
 {
     if (stream)
     {
-        Stream *streamBuscada = buscarStream(stream->info.nomeStream, nomeStream);
+        Stream *streamBuscada = buscarStream(stream, nomeStream);
         
         if (streamBuscada->info.categoria)
         {
-            Categorias *categoriaBuscada = buscarCategoria(categoria->nomeCategoria, nomeCategoria);
+            Categorias *categoriaBuscada = buscarCategoria(categoria, nomeCategoria);
 
             if (categoriaBuscada->programas)
             {
@@ -192,48 +193,114 @@ void mostrarProgDeCatDeStream(Categorias *categoria, Stream *stream, char nomeCa
 }
 
 // viii)Mostrar todas as streams que tem uma determinada categoria.
-void mostrarStreamDeCategoria(Stream *stream, Categorias *categoria, char nomeDaCategoria)
+void mostrarStreamDeCategoria(Stream *stream, Categorias *categoria, char *nomeDaCategoria)
 {
-    if (categoria)
+    if (stream)
     {
-        Categorias *categoriaBuscada = buscarCategoria(categoria, nomeDaCategoria);
-        
+        int comparaStream = strcmp(stream->info.categoria->nomeCategoria, nomeDaCategoria);
+        if (comparaStream == 0)
+        {
+            printf("Stream: %s\n", stream->info.nomeStream);
+        }
+        else if (comparaStream < 0)
+        {
+            mostrarStreamDeCategoria(stream->esq, categoria, nomeDaCategoria);
+        }
+        else 
+        {
+            mostrarStreamDeCategoria(stream->dir, categoria, nomeDaCategoria);
+        }
     }
-    
 }
-// declara as funções que você já tem
 
-// void imprimirInOrdem(Stream *raiz) {
-//     if (raiz != NULL) {
-//         imprimirInOrdem(raiz->esq);
-//         printf("Stream: %s | Site: %s\n", raiz->info.nomeStream, raiz->info.nomeSite);
-//         imprimirInOrdem(raiz->dir);
-//     }
-// }
 
-// int main() {
-//     Stream *raiz = CriarStream();
+void imprimirInOrdem(Stream *raiz) {
+    if (raiz != NULL) {
+        imprimirInOrdem(raiz->esq);
+        printf("Stream: %s | Site: %s\n", raiz->info.nomeStream, raiz->info.nomeSite);
+        imprimirInOrdem(raiz->dir);
+    }
+}
 
-//     // Inserir 3 streams
-//     printf("=== Inserindo Streams ===\n");
-//     for (int i = 0; i < 5; i++) {
-//         InfoStream dados = preencherDadosStream();
-//         Stream *no = alocarNoStream(dados);
-//         InserirStream(&raiz, no);
-//     }
+// xvi) Permita remover uma categoria de uma stream, só pode ser removida se não tiver nenhum programa
+//cadastrado nela.
 
-//     printf("\n--- Árvore em ordem (alfabética) ---\n");
-//     imprimirInOrdem(raiz);
+int removerCategoriaDaStream(Stream **stream, char *categoriasremover)
+{
+    int removeu = 0;
+    Categorias* categoriabuscada = buscarCategoria((*stream)->info.categoria, categoriasremover);
 
-//     // Remover uma stream
-//     char nomeRemover[50];
-//     printf("\nDigite o nome da Stream para remover: ");
-//     scanf("%s", nomeRemover);
+    if (categoriabuscada)
+    {
+        if (categoriabuscada->programas == NULL )
+        {
+            removerCategoriaDaStream(stream, categoriasremover);
+            removeu = 1;
+        }
+    }
+    return removeu;
+}
 
-//     remover(&raiz, nomeRemover);
 
-//     printf("\n--- Árvore após remoção ---\n");
-//     imprimirInOrdem(raiz);
 
-//     return 0;
-// }
+int main() {
+    Stream *raiz = CriarStream();
+    int opcao;
+    char nomeBusca[50];
+    char nomeRemover[50];
+
+    do {
+        printf("\n===== MENU STREAM =====\n");
+        printf("1 - Inserir Stream\n");
+        printf("2 - Mostrar Streams (ordem alfabetica)\n");
+        printf("3 - Buscar Stream\n");
+        printf("4 - Remover Stream\n");
+        printf("0 - Sair\n");
+        printf("Escolha: ");
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1: {
+                InfoStream dados = preencherDadosStream();
+                Stream *no = alocarNoStream(dados);
+                if (InserirStream(&raiz, no))
+                    printf("Stream inserida com sucesso!\n");
+                else
+                    printf("Stream já existe!\n");
+                break;
+            }
+            case 2:
+                printf("\n--- Lista de Streams ---\n");
+                imprimirInOrdem(raiz);
+                break;
+            case 3:
+                printf("Digite o nome da Stream para buscar: ");
+                scanf("%s", nomeBusca);
+                {
+                    Stream *resultado = buscarStream(raiz, nomeBusca);
+                    if (resultado)
+                        printf("Encontrada: %s | Site: %s\n", 
+                               resultado->info.nomeStream, resultado->info.nomeSite);
+                    else
+                        printf("Stream não encontrada!\n");
+                }
+                break;
+            case 4:
+                printf("Digite o nome da Stream para remover: ");
+                scanf("%s", nomeRemover);
+                remover(&raiz, nomeRemover);
+                printf("Se existia, a Stream foi removida.\n");
+                break;
+            case 0:
+                printf("Encerrando programa...\n");
+                break;
+            default:
+                printf("Opção inválida!\n");
+        }
+    } while (opcao != 0);
+
+    return 0;
+}
+
+
+
