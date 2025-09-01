@@ -3,6 +3,9 @@
 #include<string.h>
 #include"categorias.h"
 
+//  para compilar é só roda:
+//  gcc programas.c testeProgramas.c -o teste
+//  ./teste
 
 int main() {
     Categorias *lista = criarCategoria();

@@ -4,6 +4,10 @@
 #include "programas.h"
 
 // teste de alocar
+
+
+
+
 int main() {
     Programas *raiz = NULL;
     infoProgramas dados;

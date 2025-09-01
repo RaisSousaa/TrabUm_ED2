@@ -8,6 +8,7 @@
 //  gcc stream.c testeStream.c -o teste
 //  ./teste
 
+
 int main() {
     Stream *raiz = CriarStream();
     int opcao;
