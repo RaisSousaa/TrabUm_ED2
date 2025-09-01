@@ -5,8 +5,6 @@
 
 
 
-// ==================== LISTA DO HISTÓRICO ====================
- 
 /* cria nó já pronto para uso */
 Historico* alocarHistorico(const InfoHistorico *dado)
 {
