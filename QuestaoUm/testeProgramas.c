@@ -5,7 +5,38 @@
 
 // teste de alocar
 
+            // case 1:
+            //     // Informar dados
 
+            //     printf("Informe o nome do estado: \n"); scanf("%s", nome_estado);
+            //     printf("Informe o nome da capital: \n"); scanf("%s", nome_capital);  
+
+            //     n_cidade = 1;
+            //     populacao = 0;
+
+            //     novo = buscar_estado(estados, nome_estado, &encontrou);
+
+            //     if (encontrou == 0)
+            //     {
+            //         novo = alocar_estado();
+            //         preencher_estado(&novo->infoEstado, nome_estado, nome_capital,n_cidade,populacao);
+                    
+            //         preencherCidade(&auxInfoCidade, nome_capital, 0);
+                    
+            //         inseriu_cidade = inserirCidade(&novo->infoEstado.arv_cidade, auxInfoCidade);
+
+            //         resp = inserir_estado_ordenado(&estados, novo);
+
+            //         if (resp == 1){
+            //             printf("Estado Cadastrado !!!\n");    
+            //         }else{
+            //             printf("Não foi possivel cadastrar o Estado %s !!!", nome_estado);
+            //         }
+                    
+            //     }else{
+            //         printf("Não foi possivel cadastrar o Estado %s, pois ele já existe!!!", nome_estado);
+            //     }
+            //     break;
 
 
 int main() {

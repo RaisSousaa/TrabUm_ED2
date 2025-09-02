@@ -42,7 +42,6 @@ infoProgramas preencherDadosPrograma(void);
 int inserirProgramas(Programas **raizProgramas, Programas *no);
 Programas *buscarProgramas(Programas *raiz, const char *nomeProgramas);
 void mostrarProgramas(Programas *raiz);
-void limparNovaLinha(char *s);
-void drenarAteFimDeLinha(void) ;
+
 
 #endif

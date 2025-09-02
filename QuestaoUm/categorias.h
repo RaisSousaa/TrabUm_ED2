@@ -7,7 +7,7 @@ typedef struct Programas programas;
 
 
 typedef enum Tipo {
-    Esporte = 1, 
+    Esporte, 
     Noticia,
     Entreterimento,
     Cultura
