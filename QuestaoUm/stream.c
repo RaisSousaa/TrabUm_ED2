@@ -62,14 +62,19 @@ int ehFolha(Stream *raiz) {
 }
 
 Stream *soUmFilho(Stream *no) {
-    if (no->esq == NULL && no->dir != NULL) {
-        return no->dir;
-    } else if (no->esq != NULL && no->dir == NULL) {
-        return no->esq;
-    } else {
-        return NULL;
+    Stream *resultado = NULL;
+
+    if (no != NULL) {
+        if (no->esq == NULL && no->dir != NULL) {
+            resultado = no->dir;
+        } else if (no->esq != NULL && no->dir == NULL) {
+            resultado = no->esq;
+        }
     }
+
+    return resultado;
 }
+
 
 Stream* maiorValor(Stream* no) {
     Stream* aux = no;
@@ -264,7 +269,6 @@ int removerCategoriaDaStream(Stream **stream, char *categoriasremover)
 }
 
 
-
 int main()
 {
     Stream *raiz = CriarStream();
@@ -342,6 +346,4 @@ int main()
     
     return 0;
 }
-
-
 
