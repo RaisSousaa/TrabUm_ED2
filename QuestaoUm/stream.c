@@ -8,13 +8,13 @@ Stream *CriarStream()
     return NULL;
 }
 
+// alocacao do no da arvore
 Stream *alocarNoStream(InfoStream stream)
 {
     Stream *no = (Stream*) malloc(sizeof(Stream));
     if (no == NULL)
     {
         printf("Erro ao alocar memoria\n");
-
     }
     else
     {
@@ -25,7 +25,7 @@ Stream *alocarNoStream(InfoStream stream)
     return no;
 }
 
-
+// Preenche o no da arvore
 InfoStream preencherDadosStream()
 {
     InfoStream dados;
@@ -36,19 +36,17 @@ InfoStream preencherDadosStream()
     return dados;
 }
 
-
+//Insere o no da arvore
 int InserirStream(Stream **raiz, Stream *no) 
 {
     int inseriu = 0;
-    if (!(*raiz)) // verifica se e nulo
-    // tem um ponteiro pois estou acessando o conteudo da no atual da Streamore
+    if (!(*raiz)) 
     {
-        *raiz = no; //A percorrer ate o nulo para adicionar o no
+        *raiz = no; 
         inseriu = 1;
     }
     else
     {
-
         int compara = strcmp(no->info.nomeStream, (*raiz)->info.nomeStream);
 
         if (compara < 0)
@@ -56,15 +54,12 @@ int InserirStream(Stream **raiz, Stream *no)
         else if (compara > 0)
             inseriu = InserirStream(&(*raiz)->dir, no);
     }
-
     return inseriu;
 }
 
-
 int ehFolha(Stream *raiz) {
     return (raiz->esq == NULL && raiz->dir == NULL);
-}// vi) Mostrar todas as categorias cadastradas para uma determinada stream.
-
+}
 
 Stream *soUmFilho(Stream *no) {
     if (no->esq == NULL && no->dir != NULL) {
@@ -129,26 +124,22 @@ void mostrarStreams(Stream *raiz)
 
 Stream *buscarStream(Stream *raiz, char *nomedastream)
 {
-    int retorno = 0;
-    Stream *aux = raiz;
-    if (raiz)
-    {
-        int compara = strcmp(nomedastream, aux->info.nomeStream);
+    Stream *resultado = NULL;
 
-        if (compara == 0) {
-            retorno = 1;
-        } 
-        else if (compara < 0) 
-        {
-            buscarStream(aux->esq, nomedastream);
-        } 
-        else if (compara > 0)
-        {
-            buscarStream(aux->dir, nomedastream);
+    if (raiz != NULL) {
+        int comparastream = strcmp(nomedastream, raiz->info.nomeStream);
+
+        if (comparastream == 0) {
+            resultado = raiz;
+        } else if (comparastream < 0) {
+            resultado = buscarStream(raiz->esq, nomedastream);
+        } else {
+            resultado = buscarStream(raiz->dir, nomedastream);
         }
     }
-    return aux;
+    return resultado;
 }
+
 
 // vi) Mostrar todas as categorias cadastradas para uma determinada stream.
 void mostrarCategoriasStream(Stream *raiz, char *nomeStream)
@@ -213,6 +204,37 @@ void mostrarStreamDeCategoria(Stream *stream, Categorias *categoria, char *nomeD
     }
 }
 
+//x) Mostrar todas as streams que tem um determinado tipo de categoria.
+void mostrarStreamDoTipoCategoria(Stream *stream, int nometipocategoria)
+{
+    if (stream) 
+    {
+        Categorias *aux = stream->info.categoria;
+        int achou = 0;
+
+        if (aux) 
+        {
+            Categorias *inicio = aux;
+            do 
+            {
+                if (aux->tipo == nometipocategoria) 
+                {
+                    achou = 1;
+                }
+                aux = aux->prox;
+            } while (aux != inicio && achou == 0);
+        }
+
+        if (achou) 
+        {
+            printf("Stream: %s\n", stream->info.nomeStream);
+        }
+
+        mostrarStreamDoTipoCategoria(stream->esq, nometipocategoria);
+        mostrarStreamDoTipoCategoria(stream->dir, nometipocategoria);
+    }
+}
+
 
 void imprimirInOrdem(Stream *raiz) {
     if (raiz != NULL) {
@@ -243,64 +265,83 @@ int removerCategoriaDaStream(Stream **stream, char *categoriasremover)
 
 
 
-// int main() {
-//     Stream *raiz = CriarStream();
-//     int opcao;
-//     char nomeBusca[50];
-//     char nomeRemover[50];
+int main()
+{
+    Stream *raiz = CriarStream();
+    Categorias *lista;
+    int opcao;
+    
+    do
+    {
+        printf("1. Cadastrar strem\n");
+        printf("2. Mostrar Stream\n");
+        printf("3. Remover Stream\n");
+        printf("4. Mostrar streams que tem uma determinada categoria\n");
+        printf("5. Mostrar as streams que tem uma determinada categoria\n");
+        scanf("%d", &opcao);   
+        
+        switch (opcao)
+        {
+        //i) Cadastrar Stream: cadastrar dados de streams organizados em uma árvore binária pelo nome da stream, o usuário pode //cadastrar uma stream a qualquer momento, não permita cadastro repetido.
+            case 1:
+            {
+                InfoStream dados = preencherDadosStream();
+                Stream *novoNo = alocarNoStream(dados);
+                if(InserirStream(&raiz, novoNo))
+                    printf("Stream cadastrada!\n");
+                else
+                    printf("A stream nao foi cadastrada pois ja existe!\n");
 
-//     do {
-//         printf("\n===== MENU STREAM =====\n");
-//         printf("1 - Inserir Stream\n");
-//         printf("2 - Mostrar Streams (ordem alfabetica)\n");
-//         printf("3 - Buscar Stream\n");
-//         printf("4 - Remover Stream\n");
-//         printf("0 - Sair\n");
-//         printf("Escolha: ");
-//         scanf("%d", &opcao);
+                break;
+            }
 
-//         switch (opcao) {
-//             case 1: {
-//                 InfoStream dados = preencherDadosStream();
-//                 Stream *no = alocarNoStream(dados);
-//                 if (InserirStream(&raiz, no))
-//                     printf("Stream inserida com sucesso!\n");
-//                 else
-//                     printf("Stream já existe!\n");
-//                 break;
-//             }
-//             case 2:
-//                 printf("\n--- Lista de Streams ---\n");
-//                 imprimirInOrdem(raiz);
-//                 break;
-//             case 3:
-//                 printf("Digite o nome da Stream para buscar: ");
-//                 scanf("%s", nomeBusca);
-//                 {
-//                     Stream *resultado = buscarStream(raiz, nomeBusca);
-//                     if (resultado)
-//                         printf("Encontrada: %s | Site: %s\n", 
-//                                resultado->info.nomeStream, resultado->info.nomeSite);
-//                     else
-//                         printf("Stream não encontrada!\n");
-//                 }
-//                 break;
-//             case 4:
-//                 printf("Digite o nome da Stream para remover: ");
-//                 scanf("%s", nomeRemover);
-//                 remover(&raiz, nomeRemover);
-//                 printf("Se existia, a Stream foi removida.\n");
-//                 break;
-//             case 0:
-//                 printf("Encerrando programa...\n");
-//                 break;
-//             default:
-//                 printf("Opção inválida!\n");
-//         }
-//     } while (opcao != 0);
+            // i) Cadastrar Stream: cadastrar dados de streams organizados em uma árvore binária pelo nome da stream, o usuário pode cadastrar uma stream a qualquer momento, não permita cadastro repetido.
+            case 2:
+            {
+                if (raiz)
+                    imprimirInOrdem(raiz);
+                else
+                    printf("Nenhuma stream cadastrada.\n");
+                break;
+            }
+            //xvi) Permita remover uma categoria de uma stream, só pode ser removida se não tiver nenhum programa cadastrado nela.
+            case 3:
+            {
+                char streamRemover[50];
+                printf("Digite o nome da stream para remover:\n");
+                setbuf(stdin, NULL); // limpar o buff
+                scanf("%[^\n]", streamRemover);
+                remover(&raiz, streamRemover);   
+                break;    
+            }
 
-//     return 0;
-// }
+            //viii)Mostrar todas as streams que tem uma determinada categoria.
+            case 4:
+            {
+                char nomecategoria[50];
+                printf("Digite o nome da categoria:\n");
+                scanf("%[^\n]", nomecategoria);
+                mostrarStreamDeCategoria(raiz, lista, nomecategoria);
+                break;
+            }
+
+            // x) Mostrar todas as streams que tem um determinado tipo de categoria.
+            case 5:
+            {
+                char nomeTipoCat[50];
+                printf("Digite o nome do tipo da categoria:\n");
+                scanf("%[^\n]", nomeTipoCat);
+                mostrarStreamDoTipoCategoria(raiz, nomeTipoCat);
+                break;
+            }
+
+            case 0: break;
+            default: printf("Opcao invalida!\n");
+        }
+    } while (opcao != 0);
+    
+    return 0;
+}
 
 
 

@@ -31,5 +31,9 @@ Stream *buscarStream(Stream *raiz, char *nomedastream);
 void mostrarCategoriasStream(Stream *raiz, char *nomeStream);
 void mostrarProgDeCatDeStream(Categorias *categoria, Stream *stream, char *nomeCategoria, char *nomeStream, Programas *programas);
 void mostrarStreamDeCategoria(Stream *stream, Categorias *categoria, char *nomeDaCategoria);
+void imprimirInOrdem(Stream *raiz);
+void mostrarStreamDoTipoCategoria(Stream *stream, int nometipocategoria);
+
+
 
 #endif

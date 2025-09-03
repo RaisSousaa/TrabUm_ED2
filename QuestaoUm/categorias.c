@@ -2,6 +2,7 @@
 #include<stdlib.h>
 #include<string.h>
 #include "categorias.h"
+#include "stream.h"
 
 char *tipos_char[] = {"Esporte", "Noticia", "Entreterimento", "Cultura"};
 
@@ -24,28 +25,12 @@ void prencherCategoria(Categorias *no){
     printf("Sua escolha -> ");
     scanf("%d", &escolha);
 
-    switch (escolha)
-    {
-    case Esporte:
-        no->tipo = Esporte;
-        break;
-    case Noticia:
-        no->tipo = Noticia;
-        break;
-    case Entreterimento:
-        no->tipo = Entreterimento;
-        break;
-    case Cultura:
-        no->tipo = Cultura;
-        break;
-    default:
-        break;
-    }
+    no->tipo = escolha;
 }
 
 void inserirCategoria(Categorias **lista, Categorias *no)
 {
-    if (*lista == NULL)
+    if (*lista)
     {
         *lista = no;
         no->prox = no;
@@ -55,29 +40,36 @@ void inserirCategoria(Categorias **lista, Categorias *no)
         Categorias *aux = *lista;
         int duplicata = 0;
 
-        do {
-            if (strcmp(aux->nomeCategoria, no->nomeCategoria) == 0)
-                duplicata = 1;
-            aux = aux->prox;
-        } while (aux != *lista && duplicata == 0);
-
-        if (duplicata == 0)
-        {
-            aux = *lista;
-            while (aux->prox != *lista)
+        if(aux != NULL) {
+            do {
+                if(strcmp(aux->nomeCategoria, no->nomeCategoria) == 0){
+                    duplicata = 1;
+                    break; // já achou, sai do loop
+                }
                 aux = aux->prox;
+            } while(aux != *lista);
+        }
 
-            aux->prox = no;
+        if (duplicata == 0) { 
+            aux = *lista; 
+            while (aux->prox != *lista) 
+                aux = aux->prox; 
+                
+            aux->prox = no; 
             no->prox = *lista;
+
         }
     }
 }
+
+
 Categorias *alocarMemoriaNo()
 {
     Categorias *no = (Categorias *) malloc(sizeof(Categorias));
     if (no == NULL)
     {
         printf("Erro ao alocar\n");
+        exit(EXIT_FAILURE);
     }
     else
     {
@@ -125,88 +117,75 @@ Categorias *buscarCategoria(Categorias *categoria, char *buscarCat)
 
 void removerCategoria(Categorias **categoria, char *nomeCategoria)
 {
-    if (*categoria == NULL)
-        return;
+    if (*categoria != NULL) {
+        Categorias *atual = *categoria;
+        Categorias *anterior = NULL;
+        Categorias *remover = NULL;
 
-    Categorias *atual = *categoria;
-    Categorias *anterior = NULL;
-    int achou = 0;
-
-    do {
-        if (strcmp(atual->nomeCategoria, nomeCategoria) == 0) {
-            achou = 1;
-            break;
-        }
-        anterior = atual;
-        atual = atual->prox;
-    } while (atual != *categoria);
-
-    if (achou) {
-        if (atual == *categoria) { // removendo cabeça
-            Categorias *ultimo = *categoria;
-            while (ultimo->prox != *categoria)
-                ultimo = ultimo->prox;
-
-            if (ultimo == *categoria) { // único elemento
-                *categoria = NULL;
-            } else {
-                *categoria = atual->prox;
-                ultimo->prox = *categoria;
+        do {
+            if (strcmp(atual->nomeCategoria, nomeCategoria) == 0) {
+                remover = atual;
             }
-        } else { // removendo nó do meio ou final
-            anterior->prox = atual->prox;
+            anterior = atual;
+            atual = atual->prox;
+        } while (atual != *categoria && remover == NULL);
+
+        if (remover != NULL) {
+            if (remover == *categoria) { // removendo cabeça
+                Categorias *ultimo = *categoria;
+                while (ultimo->prox != *categoria)
+                    ultimo = ultimo->prox;
+
+                if (ultimo == *categoria) { // único elemento
+                    *categoria = NULL;
+                } else {
+                    *categoria = remover->prox;
+                    ultimo->prox = *categoria;
+                }
+            } else { // removendo nó do meio ou final
+                anterior->prox = remover->prox;
+            }
+            free(remover);
         }
-        free(atual);
     }
+    return;
 }
 
 
-int main() {
-    Categorias *lista = criarCategoria();
 
-    // Criar primeira categoria
-    Categorias *c1 = alocarMemoriaNo();
-    strcpy(c1->nomeCategoria, "Esporte");
-    c1->tipo = Esporte;
-    inserirCategoria(&lista, c1);
+int main()
+{
+    Stream *raiz;
+    int opcao;
+    char nomeStream[50];
 
-    // Criar segunda categoria
-    Categorias *c2 = alocarMemoriaNo();
-    strcpy(c2->nomeCategoria, "Noticia");
-    c2->tipo = Noticia;
-    inserirCategoria(&lista, c2);
 
-    // Criar terceira categoria
-    Categorias *c3 = alocarMemoriaNo();
-    strcpy(c3->nomeCategoria, "Cultura");
-    c3->tipo = Cultura;
-    inserirCategoria(&lista, c3);
+    do
+    {
+        printf("1. Cadastrar Categorias\n");
+        printf("2. Mostrar categorias de uma stream\n");
+        printf("3. Mostrar programas de categoria\n");
+        printf("0. Voltar\n");
+        printf("Escolha: ");
+        scanf("%d", &opcao);
+        
+        switch (opcao)
+        {
+            case 1:
+                Stream *streamBuscada;
+                printf("Digite o nome da stream para inserir a categoria:\n");
+                scanf("%[^\n]", nomeStream);
+                streamBuscada = buscarStream(raiz, nomeStream);
 
-    printf("\n--- Categorias inseridas ---\n");
-    mostrarCategorias(lista);
+                break;
+            
+            default:
+                break;
+        }
+    } while (opcao != 0);
+    
+    
+   
 
-    // Buscar categoria
-    char buscar[] = "Noticia";
-    Categorias *achada = buscarCategoria(lista, buscar);
-    if (achada != NULL) {
-        printf("\nCategoria encontrada: %s\n", achada->nomeCategoria);
-    } else {
-        printf("\nCategoria '%s' não encontrada.\n", buscar);
-    }
 
-    // Remover categoria
-    printf("\nRemovendo categoria 'Esporte'...\n");
-    removerCategoria(&lista, "Esporte");
-
-    printf("\n--- Lista após remoção ---\n");
-    mostrarCategorias(lista);
-
-    // Remover categoria inexistente
-    printf("\nTentando remover 'Inexistente'...\n");
-    removerCategoria(&lista, "Inexistente");
-
-    printf("\n--- Lista final ---\n");
-    mostrarCategorias(lista);
-
-    return 0;
 }
