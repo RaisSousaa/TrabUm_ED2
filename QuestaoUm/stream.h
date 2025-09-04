@@ -22,15 +22,11 @@ Stream *CriarStream();
 Stream *alocarNoStream(InfoStream stream);
 InfoStream preencherDadosStream();
 int InserirStream(Stream **raiz, Stream *no);
-int ehFolha(Stream *raiz);
-Stream *soUmFilho(Stream *no);
-Stream* maiorValor(Stream* no);
-int remover(struct Stream **raiz, char *stream_remove);
-void mostrarStreams(Stream *raiz);
+
 Stream *buscarStream(Stream *raiz, char *nomedastream);
 void mostrarCategoriasStream(Stream *raiz, char *nomeStream);
 void mostrarProgDeCatDeStream(Categorias *categoria, Stream *stream, char *nomeCategoria, char *nomeStream, Programas *programas);
-void mostrarStreamDeCategoria(Stream *stream, Categorias *categoria, char *nomeDaCategoria);
+void mostrarStreamDeCategoria(Stream *stream, char *nomeDaCategoria);
 void imprimirInOrdem(Stream *raiz);
 void mostrarStreamDoTipoCategoria(Stream *stream, int nometipocategoria);
 

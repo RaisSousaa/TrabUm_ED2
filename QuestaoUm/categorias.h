@@ -25,7 +25,7 @@ typedef struct Categorias
 
 Categorias *criarCategoria();
 void prencherCategoria(Categorias *no);
-void inserirCategoria(Categorias **lista, Categorias *no);
+int inserirCategoria(Categorias **lista, Categorias *no);
 Categorias *alocarMemoriaNo();
 void mostrarCategorias(Categorias *lista);
 Categorias *buscarCategoria(Categorias *categoria, char *buscarCat);

@@ -17,27 +17,38 @@ void prencherCategoria(Categorias *no){
     
     no->programas = NULL;
 
-    printf("Escolha a categoria: \n");
+    printf("Digite o nome da categoria:\n");
+    setbuf(stdin, NULL);
+    scanf(" %[^\n]", no->nomeCategoria);
+
+    printf("Escolha o tipo da categoria: \n");
     printf("1 - Esporte \n");
     printf("2 - Noticia \n");
-    printf("3 - Entreterimento \n");
+    printf("3 - Entretenimento \n");
     printf("4 - Cultura \n");
     printf("Sua escolha -> ");
     scanf("%d", &escolha);
 
-    no->tipo = escolha;
+    if (escolha >= 1 && escolha <= 4) {
+        no->tipo = (Tipo)escolha;
+    } else {
+        printf("Tipo inválido, setando como Cultura.\n");
+        no->tipo = Cultura;
+    }
 }
 
-void inserirCategoria(Categorias **lista, Categorias *no)
+
+int inserirCategoria(Categorias **lista, Categorias *no)
 {
-    if (*lista)
+    int inseriu = 1;
+    if (!(*lista))
     {
         *lista = no;
-        no->prox = no;
+        no->prox = *lista;
     }
     else
     {
-        Categorias *aux = *lista;
+        Categorias *aux = (*lista);
         int duplicata = 0;
 
         if(aux != NULL) {
@@ -57,9 +68,13 @@ void inserirCategoria(Categorias **lista, Categorias *no)
                 
             aux->prox = no; 
             no->prox = *lista;
-
+        }
+        else
+        {
+            inseriu = 0;
         }
     }
+    return inseriu;
 }
 
 
@@ -88,6 +103,10 @@ void mostrarCategorias(Categorias *lista)
             printf("Categoria: %s\n", aux->nomeCategoria);
             aux = aux->prox;
         } while (aux != lista);
+    }
+    else
+    {
+        printf("Sem categorias!");
     }
 }
 
@@ -149,44 +168,5 @@ void removerCategoria(Categorias **categoria, char *nomeCategoria)
         }
     }
     return;
-}
-
-
-
-int main()
-{
-    Stream *raiz;
-    int opcao;
-    char nomeStream[50];
-
-
-    do
-    {
-        printf("1. Cadastrar Categorias\n");
-        printf("2. Mostrar categorias de uma stream\n");
-        printf("3. Mostrar programas de categoria\n");
-        printf("0. Voltar\n");
-        printf("Escolha: ");
-        scanf("%d", &opcao);
-        
-        switch (opcao)
-        {
-            case 1:
-                Stream *streamBuscada;
-                printf("Digite o nome da stream para inserir a categoria:\n");
-                scanf("%[^\n]", nomeStream);
-                streamBuscada = buscarStream(raiz, nomeStream);
-
-                break;
-            
-            default:
-                break;
-        }
-    } while (opcao != 0);
-    
-    
-   
-
-
 }
 
