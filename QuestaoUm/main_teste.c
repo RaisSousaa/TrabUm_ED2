@@ -85,56 +85,139 @@ void mostrarApresentadoresPorCategoria(Apresentadores *listaApresentadores, int 
 }
 
 
+void menuCategoria(Stream *stream, Categorias *categorias, Stream *streams)
+{
+    Categorias *noCategoria = criarCategoria();
+    Categorias *categorias;
 
-// int main()
-// {
-//     Stream *raizStream = NULL;
-//     InfoStream dados;
-//     Stream *stream;
+    Programas *programas;
+
+    int opcao;
+
+    do
+    {
+        printf("0 - Sair\n");
+        printf("1 - Cadastrar Categoria\n");
+        printf("2 - Mostrar Categoria\n");
+        printf("3 - Buscar Categoria\n");
+        printf("Escolha uma opcao: ");
+        scanf("%d", &opcao);
 
 
-
-//     int opcao;
-
-//     do
-//     {
-//         printf("0 - Sair\n");
-//         printf("1 - Cadastrar Stream\n");
-//         printf("2 - Mostrar Stream\n");
-//         printf("3 - Buscar Stream\n");
-//         printf("Escolha uma opcao: ");
-//         scanf("%d", &opcao);
-
-//         switch (opcao)
-//         {
-//         case 0:
-//             printf("Finalizando...\n");
-//             break;
-//         case 1:
-        
-//             dados = preencherDadosStream();
-//             stream = alocarNoStream(dados);
-
-//             //chamaria a função alocar apresentador e já passava o nome do apresentador
-
-//             int res = InserirStream(&raizStream, stream);
-
-//             if (res == 1)
-//                 printf("Stream cadastrada com sucesso.\n");
-//             else printf("Stram já cadastrada!.\n");
-
-//             break;
+        switch (opcao)
+        {
+        case 1:
+            /* cadastrar categoria */
             
+            //insere
+            Categorias *lista = criarCategoria();
+            Categorias  *nomeCategoria[TAM_STRING];
 
         
-//         default:
-//             break;
-//         }
 
 
-//     } while (opcao != 0);
+            break;
+        case 2:
+            /* mostrar categoria */
+            printf("===Catalogo Categoria===\n");
+            mostrarStreams(noCategoria);
+            break;
+
+        case 3:
+            /* buscar categoria e entrar no menu programas */
+            char nomeCategoria[TAM_STRING];
+            printf("Digite nome da Categoria: "); scanf("%s", nomeCategoria);
+            Categorias *auxCategoria = buscarStream(noCategoria, nomeCategoria);
+
+            int cmp = strcmp( nomeCategoria, noCategoria->nomeCategoria);
+
+            if (cmp == 0)
+            {
+                printf("\nCategoria: %s\n\n", auxCategoria->nomeCategoria);
+                printf("===Menu para Categoria===\n\n");
+                //criar menu de categoria e chamar aqui
+                //menuCategoria(auxCategoria, categoria, stream);
+
+            }else printf("Categoria não cadastrada!\n");
+
+            break;
+        default:
+            break;
+        }
+    } while (opcao != 0);
     
 
 
-//     return 0;
-// }
+    
+} 
+
+
+int main()
+{
+    Stream *raizStream = NULL;
+    InfoStream dados;
+    Stream *stream;
+    
+    Categorias *categoria;
+    int opcao;
+
+
+    do
+    {
+        printf("0 - Sair\n");
+        printf("1 - Cadastrar Stream\n");
+        printf("2 - Mostrar Stream\n");
+        printf("3 - Buscar Stream\n");
+        printf("Escolha uma opcao: ");
+        scanf("%d", &opcao);
+
+        switch (opcao)
+        {
+        case 0:
+            printf("Finalizando...\n");
+            break;
+        case 1:
+        
+            dados = preencherDadosStream();
+            stream = alocarNoStream(dados);
+
+            int res = InserirStream(&raizStream, stream);
+
+            if (res == 1)
+                printf("Stream cadastrada com sucesso.\n");
+            else printf("Stram já cadastrada!.\n");
+            break;
+        case 2:
+            printf("===Catalogo Stream===\n");
+            mostrarStreams(raizStream);
+            break;
+
+        case 3:
+            char nomeStream[TAM_STRING];
+            printf("Digite nome da Stream: "); scanf("%s", nomeStream);
+            Stream *auxStream = buscarStream(raizStream, nomeStream);
+
+            int cmp = strcmp( nomeStream, raizStream->info.nomeStream);
+
+            if (cmp == 0)
+            {
+                printf("\n\nStream: %s\n\n", auxStream->info.nomeStream);
+                printf("===Menu para Categoria===\n\n");
+                //criar menu de categoria e chamar aqui
+                menuCategoria(auxStream, categoria, stream);
+
+            }else printf("Stream não cadastrada!\n");
+            
+            break;
+        default:
+            printf("Opção inválida.\n");
+          break;
+        }
+
+
+    } while (opcao != 0);
+    
+
+
+    return 0;
+}

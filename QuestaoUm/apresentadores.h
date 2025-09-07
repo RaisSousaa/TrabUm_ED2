@@ -4,23 +4,14 @@
 #define TAM_STRING 50
 
 #include "historico.h"
+#include "categorias.h"
 
 //lista historico apresentador
 
 
-
-//lista apresentador
-typedef enum Categoria 
-{
-    Esporte = 1, 
-    Noticia = 2 ,
-    Entreterimento = 3 ,
-    Cultura = 4
-}Categoria;
-
 typedef struct InfoApresentador
 {
-    Categoria ondeTrabalha;
+    Tipo ondeTrabalha;
     char nome[TAM_STRING];
     char streamAtual[TAM_STRING];
     Historico *historico;

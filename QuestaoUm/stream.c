@@ -86,6 +86,80 @@ Stream *buscarStream(Stream *raiz, char *nomedastream)
 }
 
 
+Stream* maiorValor(Stream* no) {
+    Stream* aux = no;
+    while (aux->dir != NULL) {
+        aux = aux->dir;
+    }
+    return aux;
+}
+
+int remover(struct Stream **raiz, char *stream_remove) {
+    if (*raiz) {
+        if (strcmp(stream_remove, (*raiz)->info.nomeStream) < 0) {
+            remover(&(*raiz)->esq, stream_remove);
+        } else if (strcmp(stream_remove, (*raiz)->info.nomeStream) > 0) {
+            remover(&(*raiz)->dir, stream_remove);
+        } else {
+            Stream *aux;
+            if (ehFolha(*raiz)) {
+                aux = *raiz;
+                *raiz = NULL;
+                free(aux);
+            } else {
+                Stream *filho;
+                if ((filho = soUmFilho(*raiz)) != NULL) {
+                    aux = *raiz;
+                    *raiz = filho;
+                    free(aux);
+                } 
+                else {
+                    Stream *Mesq = maiorValor((*raiz)->esq);
+                    strcpy((*raiz)->info.nomeStream, Mesq->info.nomeStream);
+                    strcpy((*raiz)->info.nomeSite, Mesq->info.nomeSite);
+                    remover(&(*raiz)->esq, Mesq->info.nomeStream);
+                }
+            }
+
+        }
+    }
+    return 0;
+}
+
+// v) Mostrar todas as streams cadastradas.
+void mostrarStreams(Stream *raiz)
+{
+    if (raiz)
+    {
+        mostrarStreams(raiz->esq);
+        printf("Stream: %s\n", raiz->info.nomeStream);
+        mostrarStreams(raiz->dir);
+    }
+}
+
+Stream *buscarStream(Stream *raiz, char *nomedastream)
+{
+    int retorno = 0;
+    Stream *aux = raiz;
+    if (raiz)
+    {
+        int compara = strcmp(nomedastream, aux->info.nomeStream);
+
+        if (compara == 0) {
+            retorno = 1;
+        } 
+        else if (compara < 0) 
+        {
+            buscarStream(aux->esq, nomedastream);
+        } 
+        else if (compara > 0)
+        {
+            buscarStream(aux->dir, nomedastream);
+        }
+    }
+    return aux;
+}
+
 // vi) Mostrar todas as categorias cadastradas para uma determinada stream.
 void mostrarCategoriasStream(Stream *raiz, char *nomeStream)
 {
