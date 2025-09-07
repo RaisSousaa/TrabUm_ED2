@@ -237,6 +237,3 @@ int removerCategoriaDaStream(Stream **stream, char *categoriasremover)
 }
 
 
-
-
-
