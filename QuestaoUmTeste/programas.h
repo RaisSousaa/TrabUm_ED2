@@ -1,50 +1,57 @@
-#ifndef PROGRAMAS_H
-#define PROGRAMAS_H
+#ifndef APRESENTADORES_H
+#define APRESENTADORES_H
 
 #define TAM_STRING 50
+#include "tipos.h"
 
-typedef struct Stream Stream;       
-typedef struct Categorias Categorias;
+typedef struct Stream Stream;
 typedef struct Programas Programas;
+typedef struct Historico Historico;
 
-typedef enum Periocidade
+
+typedef struct InfoApresentador {
+    Tipo ondeTrabalha;         // usa o mesmo enum
+    char nome[TAM_STRING];
+    Stream *streamAtual;
+    Historico *historico;
+    Programas *programas;
+} InfoApresentador;
+
+
+typedef struct Apresentadores
 {
-    Diario = 1,
-    Semanal = 2,
-    Mensal = 3
-}Periocidade;
+    InfoApresentador info;
+    struct Apresentadores *prox, *ant; // lista duplamente encadeada
+} Apresentadores;
 
-typedef enum Gravacao
+
+// ===== Tipos =====
+typedef struct InfoHistorico
 {
-    AoVivo = 1,
-    SobDemanda = 2
-}Gravacao;
+    char nomeStream[50];
+    int dataInicio, dataTermino; // AAAAMMDD; dataTermino == 0 "Em curso"
+} InfoHistorico;
 
-typedef struct infoProgramas
+typedef struct Historico
 {
-    char nomePrograma[TAM_STRING];
-    Periocidade periocidade;
-    float duracao;
-    float tempoInicio;
-    Gravacao gravacao;
-    char nomeApresentador[50];
-}infoProgramas;
+    InfoHistorico info;
+    struct Historico *prox;
+} Historico;
 
-typedef struct Programas
-{
+// ===== Funções de apresentadores ======
+Apresentadores* alocarApresentador(void);
+InfoApresentador preencherDadosApresentador(void);
+int inserirApresentador(Apresentadores **inicio, Apresentadores *novo);
+Apresentadores* buscarApresentadores(Apresentadores *inicio, const char *nome_busca, int *encontrou);
+void imprimirApresentadores(Apresentadores *inicio);
+void liberarApresentadores(Apresentadores **inicio);
 
-    struct Programas *esq, *dir;
-    infoProgramas infoProgramas; // struct embutida
-}Programas;
-
-
-//Funções de programas
-
-Programas* alocarProgramas(infoProgramas dados) ;
-infoProgramas preencherDadosPrograma(void);
-int inserirProgramas(Programas **raizProgramas, Programas *no);
-Programas *buscarProgramas(Programas *raiz, const char *nomeProgramas);
-void mostrarProgramas(Programas *raiz);
-void menuProgramas(Stream *stream ,Categorias *categoriaSelecionada, Apresentadores *listaApresentadores);
+// ===== Funções de histórico ======
+Historico* alocarHistorico(const InfoHistorico *dado);
+InfoHistorico preencherDadosHistorico(void);     // <<< ADICIONADO AQUI
+int inserirHistorico(Historico **inicio, const InfoHistorico *dado);
+Historico* buscar(Historico *inicio, const char *nome);
+void imprimirHistorico(const Historico *inicio);
+void liberarHistorico(Historico **inicio);
 
 #endif
