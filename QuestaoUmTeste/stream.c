@@ -4,13 +4,20 @@
 #include "stream.h"
 
 
+/*
+Como não usava eu comentei
+Stream *CriarStream()
+{
+    return NULL;
+}
+*/
+
 Stream *alocarNoStream(InfoStream stream)
 {
     Stream *no = (Stream*) malloc(sizeof(Stream));
     if (no == NULL)
     {
         printf("Erro ao alocar memoria\n");
-
     }
     else
     {
@@ -26,16 +33,22 @@ InfoStream preencherDadosStream()
 {
     InfoStream dados;
     printf("Digite o nome da Stream:\n");
-    scanf("%s", dados.nomeStream);
+    setbuf(stdin, NULL);
+    scanf("%[^\n]", dados.nomeStream);
     printf("Digite o nome do site:\n");
-    scanf("%s", dados.nomeSite);
-    dados.categoria = NULL; // também garante aqui
+    setbuf(stdin, NULL);
+    scanf("%[^\n]", dados.nomeSite);
+    dados.categoria = NULL; 
     return dados;
 }
 
 
 int InserirStream(Stream **raiz, Stream *no) 
 {
+
+    //Nessa função ele tava dando erro com as duplicatas
+    //pedi pro chat só ajustar
+
     int inseriu = 0; // 1 = inserido, 0 = não inserido (inclui duplicado/erro)
 
     if (no == NULL) {
@@ -45,44 +58,42 @@ int InserirStream(Stream **raiz, Stream *no)
         *raiz = no;
         inseriu = 1;
     } else {
-        int cmp = strcmp(no->info.nomeStream, (*raiz)->info.nomeStream);
+        int compara = strcmp(no->info.nomeStream, (*raiz)->info.nomeStream);
 
-        if (cmp < 0) {
+        if (compara < 0) {
             inseriu = InserirStream(&(*raiz)->esq, no);
-        } else if (cmp > 0) {
+        } else if (compara > 0) {
             inseriu = InserirStream(&(*raiz)->dir, no);
         } else {
-            // DUPLICADO: mesmo nomeStream
+            // DUPLICADO: mesmo nomeStream (add aqui)
             free(no);     
             inseriu = 0;
         }
     }
-
-    return inseriu; // único return
+    return inseriu; 
 }
 
 
-
-
-int ehFolha(Stream *raiz) {
-    return (raiz->esq == NULL && raiz->dir == NULL);
-}// vi) Mostrar todas as categorias cadastradas para uma determinada stream.
-
-
-Stream *soUmFilho(Stream *no) {
+/*
+===daqui pra baixo não mechi em nada =====
+*/
+Stream *buscarStream(Stream *raiz, char *nomedastream)
+{
     Stream *resultado = NULL;
 
-    if (no != NULL) {
-        if (no->esq == NULL && no->dir != NULL) {
-            resultado = no->dir;
-        } else if (no->esq != NULL && no->dir == NULL) {
-            resultado = no->esq;
+    if (raiz != NULL) {
+        int comparastream = strcmp(nomedastream, raiz->info.nomeStream);
+
+        if (comparastream == 0) {
+            resultado = raiz;
+        } else if (comparastream < 0) {
+            resultado = buscarStream(raiz->esq, nomedastream);
+        } else {
+            resultado = buscarStream(raiz->dir, nomedastream);
         }
     }
-
     return resultado;
 }
-
 
 Stream* maiorValor(Stream* no) {
     Stream* aux = no;
@@ -92,37 +103,40 @@ Stream* maiorValor(Stream* no) {
     return aux;
 }
 
-int remover(struct Stream **raiz, char *stream_remove) {
-    if (*raiz) {
-        if (strcmp(stream_remove, (*raiz)->info.nomeStream) < 0) {
-            remover(&(*raiz)->esq, stream_remove);
-        } else if (strcmp(stream_remove, (*raiz)->info.nomeStream) > 0) {
-            remover(&(*raiz)->dir, stream_remove);
-        } else {
-            Stream *aux;
-            if (ehFolha(*raiz)) {
-                aux = *raiz;
-                *raiz = NULL;
-                free(aux);
-            } else {
-                Stream *filho;
-                if ((filho = soUmFilho(*raiz)) != NULL) {
-                    aux = *raiz;
-                    *raiz = filho;
-                    free(aux);
-                } 
-                else {
-                    Stream *Mesq = maiorValor((*raiz)->esq);
-                    strcpy((*raiz)->info.nomeStream, Mesq->info.nomeStream);
-                    strcpy((*raiz)->info.nomeSite, Mesq->info.nomeSite);
-                    remover(&(*raiz)->esq, Mesq->info.nomeStream);
-                }
-            }
+/*O remover eu comentei pq ta tendo erro no ehFolha e soUmFilho, verifica depois
+comentei pra conseguir compilar o resto*/
 
-        }
-    }
-    return 0;
-}
+// int remover(struct Stream **raiz, char *stream_remove) {
+//     if (*raiz) {
+//         if (strcmp(stream_remove, (*raiz)->info.nomeStream) < 0) {
+//             remover(&(*raiz)->esq, stream_remove);
+//         } else if (strcmp(stream_remove, (*raiz)->info.nomeStream) > 0) {
+//             remover(&(*raiz)->dir, stream_remove);
+//         } else {
+//             Stream *aux;
+//             if (ehFolha(*raiz)) {
+//                 aux = *raiz;
+//                 *raiz = NULL;
+//                 free(aux);
+//             } else {
+//                 Stream *filho;
+//                 if ((filho = soUmFilho(*raiz)) != NULL) {
+//                     aux = *raiz;
+//                     *raiz = filho;
+//                     free(aux);
+//                 } 
+//                 else {
+//                     Stream *Mesq = maiorValor((*raiz)->esq);
+//                     strcpy((*raiz)->info.nomeStream, Mesq->info.nomeStream);
+//                     strcpy((*raiz)->info.nomeSite, Mesq->info.nomeSite);
+//                     remover(&(*raiz)->esq, Mesq->info.nomeStream);
+//                 }
+//             }
+
+//         }
+//     }
+//     return 0;
+// }
 
 // v) Mostrar todas as streams cadastradas.
 void mostrarStreams(Stream *raiz)
@@ -130,55 +144,35 @@ void mostrarStreams(Stream *raiz)
     if (raiz)
     {
         mostrarStreams(raiz->esq);
-        printf("Stream: %s | Site: %s \n", raiz->info.nomeStream, raiz->info.nomeSite); 
+        printf("Stream: %s\n", raiz->info.nomeStream);
         mostrarStreams(raiz->dir);
     }
 }
 
-Stream *buscarStream(Stream *raiz, char *nomedastream)
-{
-    int retorno = 0;
-    Stream *aux = raiz;
-    if (raiz)
-    {
-        int compara = strcmp(nomedastream, aux->info.nomeStream);
-
-        if (compara == 0) {
-            retorno = 1;
-        } 
-        else if (compara < 0) 
-        {
-            buscarStream(aux->esq, nomedastream);
-        } 
-        else if (compara > 0)
-        {
-            buscarStream(aux->dir, nomedastream);
-        }
-    }
-    return aux;
-}
 
 // vi) Mostrar todas as categorias cadastradas para uma determinada stream.
-// void mostrarCategoriasStream(Stream *raiz, char *nomeStream)
-// {
-//     if (raiz)
-//     {
-//         int compara = strcmp(raiz->info.nomeStream, nomeStream);
+void mostrarCategoriasStream(Stream *raiz, char *nomeStream)
+{
+    if (raiz) 
+    {
+        int compara = strcmp(raiz->info.nomeStream, nomeStream);
 
-//         if (compara == 0)
-//         {
-//             mostrarCategorias(raiz->info.categoria);
-//         }
-//         else if (compara < 0)
-//         {
-//             mostrarCategoriasStream(raiz->esq, nomeStream);
-//         }
-//         else
-//         {
-//             mostrarCategoriasStream(raiz->dir, nomeStream);
-//         }
-//     }    
-// }
+        if (compara == 0) // achou a stream desejada
+        {
+            mostrarCategorias(raiz->info.categoria);
+        }
+        else if (compara > 0) // percorre a esquerda
+        {
+            mostrarCategoriasStream(raiz->esq, nomeStream);
+        }
+        else // percorre a direita
+        {
+            mostrarCategoriasStream(raiz->dir, nomeStream);
+        }
+    }
+
+    return;
+}
 
 
 // vii) Mostrar todos os programas de uma determinada categoria de uma determinada stream.
@@ -201,27 +195,75 @@ void mostrarProgDeCatDeStream(Categorias *categoria, Stream *stream, char *nomeC
 }
 
 // viii)Mostrar todas as streams que tem uma determinada categoria.
-void mostrarStreamDeCategoria(Stream *stream, Categorias *categoria, char *nomeDaCategoria)
+void mostrarStreamDeCategoria(Stream *raiz, char *nomeDaCategoria)
 {
-    if (stream)
+    int encontrou = 0;
+
+    if (raiz != NULL)
     {
-        int comparaStream = strcmp(stream->info.categoria->nomeCategoria, nomeDaCategoria);
-        if (comparaStream == 0)
+        // percorre esquerda
+        mostrarStreamDeCategoria(raiz->esq,  nomeDaCategoria);
+
+        // verifica categorias desta stream
+        Categorias *cat = raiz->info.categoria;
+        if (cat != NULL) 
         {
-            printf("Stream: %s\n", stream->info.nomeStream);
+            Categorias *aux = cat;
+            do {
+                if (strcmp(aux->nomeCategoria, nomeDaCategoria) == 0) {
+                    encontrou = 1;
+                }
+                aux = aux->prox;
+            } while (aux != cat && encontrou == 0);
         }
-        else if (comparaStream < 0)
-        {
-            mostrarStreamDeCategoria(stream->esq, categoria, nomeDaCategoria);
+
+        if (encontrou) {
+            printf("Stream: %s | Site: %s\n", raiz->info.nomeStream, raiz->info.nomeSite);
         }
-        else 
-        {
-            mostrarStreamDeCategoria(stream->dir, categoria, nomeDaCategoria);
-        }
+
+        // percorre direita
+        mostrarStreamDeCategoria(raiz->dir,  nomeDaCategoria);
     }
+
+    return;  // único return
 }
 
 
+//x) Mostrar todas as streams que tem um determinado tipo de categoria.
+void mostrarStreamDoTipoCategoria(Stream *stream, int nometipocategoria)
+{
+    int achou = 0; // flag para indicar se a stream possui a categoria do tipo buscado
+
+    if (stream) 
+    {
+        Categorias *aux = stream->info.categoria;
+
+        if (aux) 
+        {
+            Categorias *inicio = aux;
+            do 
+            {
+                if (aux->tipo == nometipocategoria)
+                {
+                    achou = 1; // marca que encontrou
+                }
+                aux = aux->prox;
+            } while (aux != inicio && achou == 0); // percorre até voltar ao início ou achar a categoria
+        }
+
+        if (achou) 
+        {
+            printf("Stream: %s\n", stream->info.nomeStream);
+        }
+
+        mostrarStreamDoTipoCategoria(stream->esq, nometipocategoria);
+        mostrarStreamDoTipoCategoria(stream->dir, nometipocategoria);
+    }
+
+    return;
+}
+
+// v) Mostrar todas as streams cadastradas.
 void imprimirInOrdem(Stream *raiz) {
     if (raiz != NULL) {
         imprimirInOrdem(raiz->esq);
@@ -232,21 +274,24 @@ void imprimirInOrdem(Stream *raiz) {
 
 // xvi) Permita remover uma categoria de uma stream, só pode ser removida se não tiver nenhum programa
 //cadastrado nela.
-
 int removerCategoriaDaStream(Stream **stream, char *categoriasremover)
 {
     int removeu = 0;
-    Categorias* categoriabuscada = buscarCategoria((*stream)->info.categoria, categoriasremover);
+    Categorias *categoriabuscada = NULL;
 
-    if (categoriabuscada)
+    if (stream != NULL && *stream != NULL)
     {
-        if (categoriabuscada->programas == NULL )
+        categoriabuscada = buscarCategoria((*stream)->info.categoria, categoriasremover);
+
+        if (categoriabuscada != NULL)
         {
-            removerCategoriaDaStream(stream, categoriasremover);
-            removeu = 1;
+            if (categoriabuscada->programas == NULL)
+            {
+                removerCategoria(&(*stream)->info.categoria, categoriasremover);
+                removeu = 1;
+            }
         }
     }
-    return removeu;
+
+    return removeu; // único return
 }
-
-

@@ -2,12 +2,28 @@
 #define APRESENTADORES_H
 
 #define TAM_STRING 50
-#include "categorias.h"
+#include "tipos.h"
 
 typedef struct Stream Stream;
-typedef struct Categorias Categorias;
 typedef struct Programas Programas;
 typedef struct Historico Historico;
+
+
+typedef struct InfoApresentador {
+    Tipo ondeTrabalha;         // usa o mesmo enum
+    char nome[TAM_STRING];
+    Stream *streamAtual;
+    Historico *historico;
+    Programas *programas;
+} InfoApresentador;
+
+
+typedef struct Apresentadores
+{
+    InfoApresentador info;
+    struct Apresentadores *prox, *ant; // lista duplamente encadeada
+} Apresentadores;
+
 
 // ===== Tipos =====
 typedef struct InfoHistorico
@@ -21,21 +37,6 @@ typedef struct Historico
     InfoHistorico info;
     struct Historico *prox;
 } Historico;
-
-typedef struct InfoApresentador
-{
-    Tipo ondeTrabalha;
-    char nome[TAM_STRING];
-    Stream *streamAtual;
-    Historico *historico;   // lista simples (currículo)
-    Programas *programas;   // (seu futuro uso)
-} InfoApresentador;
-
-typedef struct Apresentadores
-{
-    InfoApresentador info;
-    struct Apresentadores *prox, *ant; // lista duplamente encadeada
-} Apresentadores;
 
 // ===== Funções de apresentadores ======
 Apresentadores* alocarApresentador(void);

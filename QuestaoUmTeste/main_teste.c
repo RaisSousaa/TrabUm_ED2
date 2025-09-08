@@ -14,6 +14,10 @@ void menuProgramas(Stream *stream ,Categorias *categoriaSelecionada, Apresentado
 void menuApresentadores(Apresentadores **listaApresentadores);
 void menuHistorico(Apresentadores *ap);
 
+void finalizarUltimoHistoricoSeAberto(Historico *hist, int dataTermino);
+int programasContemApresentador(Programas *raiz, const char *nomeApresentador);
+Categorias* encontrarCategoriaPorTipoNaStream(Stream *stream, Tipo tipo);
+
 
 
 int main()
@@ -68,8 +72,7 @@ int main()
 
             Stream *auxStream = buscarStream(raizStream, nomeStream);
             if (auxStream) {
-                printf("\n\nStream: %s\n\n", auxStream->info.nomeStream);
-                printf("===Menu para Categoria===\n\n");
+                //menu para categoria
                 menuCategoria(auxStream, listaApresentadores); // só a stream selecionada
             } else {
                 printf("Stream não cadastrada!\n");
@@ -91,79 +94,106 @@ int main()
     return 0;
 }
 
-
 void menuCategoria(Stream *stream, Apresentadores *listaApresentadores)
 {
-    Categorias **inicioCat = &stream->info.categoria; 
-    int opcao;
+    int opcao = -1;
+    Categorias **inicioCat = NULL;
 
-    if (!stream) {
+    if (stream == NULL) 
+    {
         printf("Lista de Stream vazia.\n");
-        
-    }else{
+        opcao = 0;          
+    } else {
+        inicioCat = &stream->info.categoria; //inicializa dentro de stream
+    }
 
-        do {
-            printf("0 - Sair\n");
-            printf("1 - Cadastrar Categoria\n");
-            printf("2 - Mostrar Categoria\n");
-            printf("3 - Buscar Categoria\n");
-            printf("Escolha uma opcao: ");
-            scanf("%d", &opcao);
+    while (opcao != 0) {
+        printf("\n=== Menu Categoria (%s) ===\n", stream->info.nomeStream);
+        printf("0 - Voltar\n");
+        printf("1 - Cadastrar Categoria\n");
+        printf("2 - Mostrar Categorias\n");
+        printf("3 - Buscar Categoria\n");
+        printf("4 - Remover Categoria\n");
+        printf("Escolha uma opcao: ");
+        scanf("%d", &opcao);
 
-            switch (opcao) {
-            case 0: 
-                printf("Voltando para Menu Stream.\n");
-                break;
-            case 1: {
-                Categorias *novoNo = alocarCategorias();
-                if (novoNo != NULL) {
-                    *novoNo = preencherDadosCategoria();
-                    inserirCategoria(inicioCat, novoNo);   // usa a lista da stream
-                }
-                break;
-            }
-            case 2:
-                printf("=== Catalogo Categoria ===\n");
-                mostrarCategorias(*inicioCat);
-                printf("\n");
-                break;
-            case 3: {
-                char nome[TAM_STRING];
-                printf("Nome do tipo de categoria: ");
-                scanf("%s", nome);
-                Categorias *achou = buscarCategoria(*inicioCat, nome);
-                if (achou) {
-                    printf("Tipo Categoria '%s' encontrada!\n", achou->nomeCategoria);
-                    printf("=== Menu de Programas para essa Categoria ===\n");
-                    menuProgramas(stream, achou, listaApresentadores);
+        switch (opcao) {
+        case 0:
+            printf("Voltando para Menu Stream.\n");
+            break;
+
+        case 1: {
+            Categorias *novoNo = alocarMemoriaNo();
+
+            if (novoNo) 
+            {
+                prencherCategoria(novoNo);
+                if (!inserirCategoria(inicioCat, novoNo))  //
+                {
+                    printf("Categoria ja cadastrada.\n");
+                    free(novoNo);
                 } else {
-                    printf("Tipo Categoria nao cadastrada.\n");
+                    printf("Categoria cadastrada.\n");
                 }
-                break;
+            } else {
+                printf("Falha de alocacao.\n");
             }
-            default:
-                printf("Opção inválida.\n");
+            break;
+        }
+
+        case 2:
+            printf("\n=== Catalogo de Categorias ===\n");
+            mostrarCategorias(inicioCat ? *inicioCat : NULL);
+            printf("\n");
+            break;
+
+        case 3: {
+            char nome[TAM_STRING];
+            printf("Nome da categoria: ");
+            scanf(" %49[^\n]", nome);
+            Categorias *achou = buscarCategoria(inicioCat ? *inicioCat : NULL, nome);
+            if (achou) {
+                printf("Categoria '%s' encontrada! Abrindo menu de Programas...\n", achou->nomeCategoria);
+                menuProgramas(stream, achou, listaApresentadores);
+            } else {
+                printf("Categoria nao cadastrada.\n");
             }
-        } while (opcao != 0);
+            break;
+        }
+
+        case 4: {
+            char nome[TAM_STRING];
+            printf("Nome da categoria a remover: ");
+            scanf(" %49[^\n]", nome);
+            removerCategoria(inicioCat, nome);
+            printf("Operacao de remocao concluida.\n");
+            break;
+        }
+
+        default:
+            printf("Opcao invalida.\n");
+            break;
+        }
     }
 }
 
 
 void menuProgramas(Stream *stream ,Categorias *categoriaSelecionada, Apresentadores *listaApresentadores)
 {
-    Programas **raizProgramas = &categoriaSelecionada->programas; //pegando o endereço do programa dentro da lista de categoria
     int opcao;
+    Programas **raizProgramas = NULL;  /* só definimos depois do NULL-check */
 
-    if (categoriaSelecionada == NULL)
-    {
+    if (categoriaSelecionada == NULL) {
         printf("Lista categoria vazia.\n");
-    }else
-    {
-        do{
+    } else {
+        raizProgramas = &categoriaSelecionada->programas; // endereço da raiz da BST de programas
+
+        do {
             printf("0 - Sair\n");
             printf("1 - Cadastrar Programa\n");
             printf("2 - Mostrar Programa\n");
             printf("3 - Buscar Programas\n");
+            printf("4 - Cadastrar Apresentador.\n");
             printf("Escolha uma opcao: ");
             scanf("%d", &opcao);
 
@@ -173,85 +203,128 @@ void menuProgramas(Stream *stream ,Categorias *categoriaSelecionada, Apresentado
                 printf("Voltando para Menu Categoria.\n");
                 break;
 
-            case 1: 
+            case 1: {
+                /* 1) escolher apresentador */
                 char nomeApresentador[TAM_STRING];
+                printf("Digite nome do Apresentador do Programa: ");
+                scanf("%49s", nomeApresentador);
 
-                //cadastrar programas
-                printf("Digite nome do Apresentador do Programa: \n"); scanf("%s", nomeApresentador);
-                
-                /*
-                1 - informar nome do apresentador
-                2 - buscar na lista apresentador categoria que ele pertence, se ok
+                int encontrado = 0;
+                Apresentadores *ap = buscarApresentadores(listaApresentadores, nomeApresentador, &encontrado);
 
-                    verificar se a stream que ele trabalha atualmente é a mesma stream do programa que quer criar
+                int ok = 1;
 
-                    se o apresentador não trabalha na stream do programa que quer cadastrar 
-                        3 - acessar o ponteiro da stream que apresentador trabalha
-                        4 - acessar a categoria que o apresentador trabalha dentro da stream
-                        5 - percorrer todos os programas e verificar se esse apresentador esta trabalhando em alguns dos programas
-                        
-                        se apresentador foi encontrado em algum programa
-                            não pode cadatsrar apresnetador
-                        senão
-                            atualizar historico da stream e
-                                finalizar o ultimo stream (função ainda sera criada)
-                                criar um novo no de historico (preencher e inserir historico) 
-                            mudar ponteiro da stream de apresentador
-                    se o não trabalha em nem um lugar
-                        criar um novo no de historico (preencher e inserir historico) 
-                        mudar ponteiro da stream de apresentador
+                if (!ap || !encontrado) {
+                    printf("Apresentador nao encontrado.\n");
+                    ok = 0;
+                }
 
-                                                                                        
-                2 - dados = preencherDadosProgramas (então em preencher passo a stream ou passo aqui e lá tiro cadastrar apresentador ?)
-                3 - *prog = alocarProgramas
-                4 - se prog ok , inserirProgrmas
+                /* 2) pertence à categoria? */
+                if (ok && ap->info.ondeTrabalha != categoriaSelecionada->tipo) {
+                    printf("Apresentador nao pertence a esta categoria.\n");
+                    ok = 0;
+                }
 
-                é assim ?
-                
-            */
-                infoProgramas dados = preencherDadosPrograma();
-                Programas *prog = alocarProgramas(dados);
+                /* 3) já tem programa nessa categoria/stream? */
+                if (ok && programasContemApresentador(*raizProgramas, ap->info.nome)) {
+                    printf("Apresentador ja possui programa nesta categoria/stream.\n");
+                    ok = 0;
+                }
 
-                if (prog) {
-                    int res = inserirProgramas(raizProgramas, prog); // use sua função correta aqui
-                    if (res == 1) 
-                        printf("Programa cadastrado com sucesso.\n");
+                /* 4) vínculo de stream atual (transferência/histórico) */
+                if (ok && ap->info.streamAtual != stream) {
+                    if (ap->info.streamAtual) {
+                        /* trabalha em outra stream: ver se já apresenta lá na MESMA categoria */
+                        Categorias *catAtual = encontrarCategoriaPorTipoNaStream(ap->info.streamAtual, ap->info.ondeTrabalha);
+                        if (catAtual && programasContemApresentador(catAtual->programas, ap->info.nome)) {
+                            printf("Apresentador ja apresenta um programa na stream atual. Transferencia bloqueada.\n");
+                            ok = 0;
+                        } else {
+                            int dataTermino, dataInicio;
+                            printf("Digite data de termino na stream atual (AAAAMMDD): ");
+                            scanf("%d", &dataTermino);
+                            finalizarUltimoHistoricoSeAberto(ap->info.historico, dataTermino);
 
-                    else    printf("Programa já cadastrado!.\n");
-                }else printf("Falha ao alocar programa.\n");
+                            InfoHistorico historico;
+                            strncpy(historico.nomeStream, stream->info.nomeStream, sizeof historico.nomeStream);
+                            historico.nomeStream[sizeof historico.nomeStream - 1] = '\0';
+                            printf("Digite data de inicio nesta stream (AAAAMMDD): ");
+                            scanf("%d", &dataInicio);
+                            historico.dataInicio  = dataInicio;
+                            historico.dataTermino = 0;
+
+                            inserirHistorico(&ap->info.historico, &historico);
+                            ap->info.streamAtual = stream;
+                        }
+                    } else {
+                        /* não trabalha em lugar nenhum: cria histórico direto */
+                        int dataInicio;
+                        InfoHistorico historico;
+                        strncpy(historico.nomeStream, stream->info.nomeStream, sizeof historico.nomeStream);
+                        historico.nomeStream[sizeof historico.nomeStream - 1] = '\0';
+                        printf("Digite data de inicio nesta stream (AAAAMMDD): ");
+                        scanf("%d", &dataInicio);
+                        historico.dataInicio  = dataInicio;
+                        historico.dataTermino = 0;
+
+                        inserirHistorico(&ap->info.historico, &historico);
+                        ap->info.streamAtual = stream;
+                    }
+                }
+
+                /* 5) se tudo ok, cadastrar o programa e amarrar apresentador */
+                if (ok) {
+                    infoProgramas dados = preencherDadosPrograma();
+                    strncpy(dados.nomeApresentador, ap->info.nome, sizeof dados.nomeApresentador);
+                    dados.nomeApresentador[sizeof dados.nomeApresentador - 1] = '\0';
+
+                    Programas *prog = alocarProgramas(dados);
+                    if (!prog) {
+                        printf("Falha ao alocar programa.\n");
+                    } else {
+                        int res = inserirProgramas(raizProgramas, prog);
+                        if (res == 1) {
+                            printf("Programa cadastrado com sucesso.\n");
+                        } else {
+                            printf("Programa ja cadastrado.\n");
+                            free(prog); // evita vazamento se não inserir
+                        }
+                    }
+                }
                 break;
-            
+            }
+
             case 2:
                 printf("===Catalogo de Programas===\n");
                 mostrarProgramas(*raizProgramas);
                 printf("\n");
                 break;
 
-            case 3: 
-                //antes de poder cadastrar um programa, preciso que na lista apresentador
-                //tenha um apresentador que trabalha nessa stream e pertence a categoria que quero cadastrar o programa
-                //como eu poderia fazer isso aqui ?
-
+            case 3: {
                 char nomePrograma[TAM_STRING];
                 printf("Digite nome do Programa: ");
-                scanf("%s", nomePrograma);
+                scanf("%49s", nomePrograma);
 
                 Programas *auxPrograma = buscarProgramas(*raizProgramas, nomePrograma);
                 if (auxPrograma) {
                     printf("\n\nPrograma: %s \n\n", auxPrograma->infoProgramas.nomePrograma);
-                    // aqui você pode abrir submenu específico de um programa, se quiser
                 } else {
-                    printf("Programa não cadastrado!.\n");
+                    printf("Programa nao cadastrado.\n");
                 }
+                break;
+            }
+            case 4:
+                menuApresentadores(&listaApresentadores);
                 break;
 
             default:
                 printf("Opção inválida.\n");
                 break;
             }
-            
+
         } while (opcao != 0);
     }
+
 }
 
 void menuApresentadores(Apresentadores **listaApresentadores)
@@ -281,8 +354,8 @@ void menuApresentadores(Apresentadores **listaApresentadores)
 
                 Apresentadores *novo = alocarApresentador();
                 if (novo != NULL) {
-                    strcpy(novo->info.nome,        dadosApre.nome);
-                    strcpy(novo->info.streamAtual, dadosApre.streamAtual);
+                    strcpy(novo->info.nome, dadosApre.nome);
+                    novo->info.streamAtual = dadosApre.streamAtual; 
                     novo->info.ondeTrabalha = dadosApre.ondeTrabalha;
 
                     int ok = inserirApresentador(listaApresentadores, novo);
@@ -308,7 +381,8 @@ void menuApresentadores(Apresentadores **listaApresentadores)
                 break;
 
             case 3: 
-                if (*listaApresentadores == NULL) {
+                if (*listaApresentadores == NULL) 
+                {
                     printf("Lista vazia.\n");
                     break;
                 }
@@ -322,10 +396,17 @@ void menuApresentadores(Apresentadores **listaApresentadores)
                 
                 if (ap && encontrado) 
                 {
+                    const char *nomeStreamAtual;
+
+                    if (ap->info.streamAtual != NULL &&
+                        ap->info.streamAtual->info.nomeStream[0] != '\0') {
+                        nomeStreamAtual = ap->info.streamAtual->info.nomeStream;
+                    } else {
+                        nomeStreamAtual = "(sem stream)";
+                    }
+
                     printf("Encontrado: Nome: %s | Stream Atual: %s | Categoria: %d\n",
-                           ap->info.nome,
-                           ap->info.streamAtual,
-                           ap->info.ondeTrabalha);
+                        ap->info.nome, nomeStreamAtual, ap->info.ondeTrabalha);
                 } else {
                     printf("Apresentador nao encontrado.\n");
                 }
@@ -347,7 +428,8 @@ void menuHistorico(Apresentadores *ap)
     if (ap == NULL) {
         printf("Erro: apresentador invalido.\n");
     } else {
-        do {
+        do 
+        {
             printf("\n--- Historico de %s ---\n", ap->info.nome);
             printf("0 - Voltar\n");
             printf("1 - Cadastrar Informacoes\n");
@@ -380,6 +462,60 @@ void menuHistorico(Apresentadores *ap)
             }
 
         } while (opcao != 0);
+    }
+}
+
+
+Categorias* encontrarCategoriaPorTipoNaStream(Stream *stream, Tipo tipo)
+{
+    Categorias *resultado = NULL;
+
+    if (stream) {
+        Categorias *cat = stream->info.categoria;
+        while (cat != NULL && resultado == NULL) {
+            if (cat->tipo == tipo) {
+                resultado = cat;        // guarda e continua condição encerra
+            } else {
+                cat = cat->prox;
+            }
+        }
+    }
+
+    return resultado; 
+}
+
+
+int programasContemApresentador(Programas *raiz, const char *nomeApresentador)
+{
+    int achou = 0;
+
+    if (raiz) {
+        if (strcmp(raiz->infoProgramas.nomeApresentador, nomeApresentador) == 0) {
+            achou = 1;
+        } else {
+            if (programasContemApresentador(raiz->esq, nomeApresentador)) {
+                achou = 1;
+            } else if (programasContemApresentador(raiz->dir, nomeApresentador)) {
+                achou = 1;
+            }
+        }
+    }
+
+    return achou; // único return
+}
+
+
+void finalizarUltimoHistoricoSeAberto(Historico *hist, int dataTermino)
+{
+    Historico *ultimo = hist;
+
+    if (ultimo) {
+        while (ultimo->prox) {
+            ultimo = ultimo->prox;
+        }
+        if (ultimo->info.dataTermino == 0) {
+            ultimo->info.dataTermino = dataTermino;
+        }
     }
 }
 

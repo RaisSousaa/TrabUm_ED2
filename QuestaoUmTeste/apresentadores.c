@@ -3,112 +3,132 @@
 #include<string.h>
 #include"apresentadores.h"
 #include"historico.h"
+#include"stream.h"
 
-//alocar
+
 Apresentadores* alocarApresentador(void) 
 {
-    int inseriu;
-    Apresentadores *novo = NULL;
-
-    novo = (Apresentadores*) malloc(sizeof(Apresentadores));
+    Apresentadores *novo = (Apresentadores*) malloc(sizeof(Apresentadores));
     if (novo == NULL) {
         printf("Erro ao alocar memória!\n");
+        return NULL;
     }
+
+    /* ligações da lista */
     novo->ant = NULL;
     novo->prox = NULL;
-    novo->info.historico = NULL;   
+
+    /* zere/initialize os campos do InfoApresentador */
+    novo->info.nome[0]      = '\0';
+    novo->info.ondeTrabalha = 0;      /* opcional: enum inválido */
+    novo->info.streamAtual  = NULL;   /* <<< ESSENCIAL */
+    novo->info.historico    = NULL;
+    novo->info.programas    = NULL;
 
     return novo;
 }
 
+
 // Preenche dados de apresentador
-//colocar para preencher no main, aqui ta por enquanto para teste
 InfoApresentador preencherDadosApresentador(void)
 {
     InfoApresentador dados;
-    printf("Digite o nome do apresentador: "); scanf("%s", dados.nome); // recebe o nome do apresentador
-    printf("Digite Stream Atual: "); scanf("%s", dados.streamAtual); // recebe stream atual
-    
+
+    /* inicialize tudo manualmente */
+    dados.nome[0]           = '\0';
+    dados.ondeTrabalha      = 0;     /* ainda não escolhido */
+    dados.streamAtual       = NULL;
+    dados.historico         = NULL;
+    dados.programas         = NULL;
+
+    printf("Digite o nome do apresentador: ");
+    scanf(" %49s", dados.nome);  
+
+    printf("Escolha a categoria em que apresentador trabalha:\n");
+    printf("1. Esportes\n2. Noticia\n3. Entreterimento\n4. Cultura\n");
+
     int tipoCategoria;
-    printf("Escolha a categoria em que apresentador trabalha:\n1. Esportes\n2. Noticia\n3. Entreterimento\n4. Cultura\n");
     scanf("%d", &tipoCategoria);
-    switch(tipoCategoria)
+
+    switch (tipoCategoria)
     {
-        case 1:
-            dados.ondeTrabalha = Esporte;
+        case 1: 
+            dados.ondeTrabalha = Esporte;        
             break;
-        case 2:
-            dados.ondeTrabalha = Noticia;
+        case 2: 
+            dados.ondeTrabalha = Noticia;        
             break;
         case 3:
-            dados.ondeTrabalha = Entreterimento;
+            dados.ondeTrabalha = Entreterimento; 
             break;
-        case 4:
+        case 4: 
             dados.ondeTrabalha = Cultura;
-            break;
+                break;
         default:
             printf("Opcao invalida. Definindo categoria como Entreterimento.\n");
             dados.ondeTrabalha = Entreterimento;
             break;
     }
 
-
-    return dados; // retorna os dados preenchidos
+    return dados;  /* único return */
 }
+
 
 // Lista ordenada dinamicamente duplamente encadeada
 //Inserção ordenada por nome do apresentador
 int inserirApresentador(Apresentadores **inicio, Apresentadores *novo)
 {
-    int cadastro = 0; // 0 = não inseriu, 1 = inseriu
+    int inseriu   = 0;   /* 1 = inseriu, 0 = não inseriu */
+    int duplicado = 0;
 
     if (inicio != NULL && novo != NULL && novo->info.nome[0] != '\0') {
 
-        Apresentadores *atual = *inicio;
-        Apresentadores *anterior = NULL;
+        Apresentadores *atual     = *inicio;
+        Apresentadores *anterior  = NULL;
 
-        while (atual != NULL && cadastro == 0) {
+        /* percorre até achar posição, duplicata, ou fim */
+        while (atual != NULL && inseriu == 0 && duplicado == 0) {
             int cmp = strcmp(novo->info.nome, atual->info.nome);
 
             if (cmp == 0) {
-                // duplicata → não insere
-                cadastro = 0;
+                /* nome igual -> não insere */
+                duplicado = 1;
             } else if (cmp < 0) {
-                // inserir antes de 'atual'
+                /* insere antes de 'atual' */
                 novo->ant  = atual->ant;
                 novo->prox = atual;
                 atual->ant = novo;
 
                 if (anterior == NULL) {
-                    *inicio = novo; // inseriu no início
+                    *inicio = novo;
                 } else {
                     anterior->prox = novo;
                 }
-
-                cadastro = 1;
+                inseriu = 1;
             } else {
+                /* continua andando */
                 anterior = atual;
-                atual = atual->prox;
+                atual    = atual->prox;
             }
         }
 
-        if (cadastro == 0 && atual == NULL) {
-            // chegou ao fim insere no final
+        /* se não duplicou e não inseriu dentro do laço, insere no fim */
+        if (duplicado == 0 && inseriu == 0) {
             novo->ant  = anterior;
             novo->prox = NULL;
 
             if (anterior == NULL) {
-                *inicio = novo; // lista estava vazia
+                *inicio = novo;      /* lista vazia */
             } else {
                 anterior->prox = novo;
             }
-
-            cadastro = 1;
+            inseriu = 1;
         }
     }
 
-    return cadastro; // único return no fim
+    return inseriu;  /* único return */
 }
+
 
 
 //buscar
@@ -137,21 +157,28 @@ Apresentadores* buscarApresentadores(Apresentadores *inicio, const char *nome_bu
     return resultado; // único ponto de saída
 }
 
-//mostrar
 void imprimirApresentadores(Apresentadores *inicio)
 {
     Apresentadores *atual = inicio;
+    static const char *NOME_CATEGORIA[4] = {"Esporte", "Noticia", "Entreterimento", "Cultura"};
 
     while (atual != NULL) {
+        const char *nomeStreamAtual;
+
+        if (atual->info.streamAtual != NULL &&
+            atual->info.streamAtual->info.nomeStream[0] != '\0') {
+            nomeStreamAtual = atual->info.streamAtual->info.nomeStream;
+        } else {
+            nomeStreamAtual = "(sem stream)";
+        }
+
         printf("Nome Apresentador: %s | Stream Atual: %s | Categoria que Trabalha: %d\n",
                atual->info.nome,
-               atual->info.streamAtual,
+               nomeStreamAtual,                       
                atual->info.ondeTrabalha);
 
         atual = atual->prox;
     }
-
-    return; // único return no fim
 }
 
 
