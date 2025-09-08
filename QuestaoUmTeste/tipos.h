@@ -1,9 +1,8 @@
 #ifndef TIPOS_H
 #define TIPOS_H
 
-#ifndef TAM_STRING
-#define TAM_STRING 50
-#endif
+
+//em categoria e em apresentador tinham os dois esse Tipo, daí depois de muitos erros de compilação, resolvi criar um .h só pra ele e parou de conflitar
 
 typedef enum Tipo {
     Esporte = 1,
