@@ -45,6 +45,7 @@ int inserirApresentador(Apresentadores **inicio, Apresentadores *novo);
 Apresentadores* buscarApresentadores(Apresentadores *inicio, const char *nome_busca, int *encontrou);
 void imprimirApresentadores(Apresentadores *inicio);
 void liberarApresentadores(Apresentadores **inicio);
+void menuApresentadores(Apresentadores **listaApresentadores, Stream *raizStream);
 
 // ===== Funções de histórico ======
 Historico* alocarHistorico(const InfoHistorico *dado);
@@ -53,5 +54,15 @@ int inserirHistorico(Historico **inicio, const InfoHistorico *dado);
 Historico* buscar(Historico *inicio, const char *nome);
 void imprimirHistorico(const Historico *inicio);
 void liberarHistorico(Historico **inicio);
+
+
+/*Funções das questoes*/
+void mostrarApresentadoresPorStream(Apresentadores *lista, const Stream *stream);
+void mostrarApresentadoresPorNomeStream(Apresentadores *lista, Stream *raizStream, const char *nomeStream);
+void mostrarApresentadoresPorCategoria(Apresentadores *lista, Tipo categoria);
+int alterarStreamApresentador(Apresentadores *ap,
+                              Stream *novaStream,
+                              int dataTerminoAntiga,
+                              int dataInicioNova);
 
 #endif

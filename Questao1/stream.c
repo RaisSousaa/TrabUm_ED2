@@ -2,6 +2,7 @@
 #include<stdlib.h>
 #include<string.h>
 #include "stream.h"
+#include "programas.h"
 
 Stream *alocarNoStream(InfoStream stream)
 {
@@ -55,10 +56,7 @@ int InserirStream(Stream **raiz, Stream *no)
 }
 
 
-/*
-===daqui pra baixo não mechi em nada =====
-*/
-Stream *buscarStream(Stream *raiz, char *nomedastream)
+Stream *buscarStream(Stream *raiz, const char *nomedastream)
 {
     Stream *resultado = NULL;
 
@@ -242,3 +240,132 @@ int removerCategoriaDaStream(Stream **stream, char *categoriasremover)
 
     return removeu; // único return
 }
+
+void mostrarProgramasStreamPorPeriodicidadeEHorario(Stream *stream, Periocidade periocidade, float horario)
+{
+    if (stream != NULL)
+    {
+        Categorias *ini = stream->info.categoria;
+        if (ini != NULL)
+        {
+            Categorias *cat = ini;
+            /* lista circular simples: roda até voltar ao início */
+            while (1)
+            {
+                filtrarProgramasPorPeriodicidadeEHorario(cat->programas, periocidade, horario);
+                cat = cat->prox;
+                if (cat == ini) break;
+            }
+        }
+        else
+        {
+            printf("(stream sem categorias)\n");
+        }
+    }
+}
+
+
+void mostrarProgramasDaCategoriaPorPeriodicidade(Stream *stream, const char *nomeCategoria, Periocidade periodicidade)
+{
+    if (stream != NULL && nomeCategoria != NULL)
+    {
+        Categorias *cats = stream->info.categoria;
+        Categorias *alvo = NULL;
+
+        if (cats != NULL)
+            alvo = buscarCategoria(cats, (char*)nomeCategoria); /* sua função já trata lista circular */
+
+        if (alvo != NULL)
+        {
+            if (alvo->programas != NULL)
+            {
+                filtrarProgramasPorPeriodicidade(alvo->programas, periodicidade);
+            }
+            else
+            {
+                printf("Categoria '%s' nao possui programas.\n", nomeCategoria);
+            }
+        }
+        else
+        {
+            printf("Categoria '%s' nao encontrada nesta stream.\n", nomeCategoria);
+        }
+    }
+}
+
+/* Remove um programa (por nome) da ABB de uma CATEGORIA específica */
+int removerProgramaDaCategoria(Categorias *categoria, const char *nomePrograma)
+{
+    int ok = 0;
+
+    if (categoria != NULL && nomePrograma != NULL) {
+        if (categoria->programas != NULL) {
+            if (removerProgramas(&categoria->programas, nomePrograma)) {
+                printf("Programa '%s' removido da categoria '%s'.\n",
+                       nomePrograma, categoria->nomeCategoria);
+                ok = 1;
+            } else {
+                printf("Programa '%s' nao encontrado na categoria '%s'.\n",
+                       nomePrograma, categoria->nomeCategoria);
+            }
+        } else {
+            printf("Categoria '%s' nao possui programas.\n", categoria->nomeCategoria);
+        }
+    }
+
+    return ok; 
+}
+
+/* Versão completa: acha STREAM -> acha CATEGORIA -> remove PROGRAMA */
+int removerProgramaDeCategoriaDaStream(Stream *raizStream,
+                                       const char *nomeStream,
+                                       const char *nomeCategoria,
+                                       const char *nomePrograma)
+{
+    int ok = 0;
+
+    if (raizStream != NULL && nomeStream != NULL &&
+        nomeCategoria != NULL && nomePrograma != NULL)
+    {
+        /* 1) buscar stream pelo nome (sua ABB de streams) */
+        Stream *stream = buscarStream(raizStream, (char*)nomeStream);
+        if (stream == NULL) {
+            printf("Stream '%s' nao encontrada.\n", nomeStream);
+        } else {
+            /* 2) buscar categoria dentro da stream (lista circular) */
+            Categorias *cat = buscarCategoria(stream->info.categoria, (char*)nomeCategoria);
+            if (cat == NULL) {
+                printf("Categoria '%s' nao encontrada na stream '%s'.\n",
+                       nomeCategoria, nomeStream);
+            } else {
+                /* 3) remover na ABB da categoria */
+                ok = removerProgramaDaCategoria(cat, nomePrograma);
+            }
+        }
+    }
+
+    return ok; 
+}
+
+int existeProgramaDoApresentadorNaStream(Stream *stream, const char *nomeApresentador)
+{
+    int existe = 0;
+
+    if (stream != NULL && nomeApresentador != NULL) {
+        Categorias *ini = stream->info.categoria;
+        if (ini != NULL) {
+            Categorias *c = ini;
+            while (existe == 0) {
+                if (programasContemApresentador(c->programas, nomeApresentador)) {
+                    existe = 1;
+                } else {
+                    c = c->prox;
+                    if (c == ini) break;
+                }
+            }
+        }
+    }
+
+    return existe; 
+}
+

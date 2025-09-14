@@ -4,7 +4,6 @@
 #include "programas.h"
 
 
-
 // Função para alocar memória para um novo programa
 Programas* alocarProgramas(infoProgramas dados) 
 {
@@ -19,16 +18,9 @@ Programas* alocarProgramas(infoProgramas dados)
     no->esq = NULL;
     no->dir = NULL;
     no->infoProgramas = dados;
-
-    // no->historico = NULL;
-    // no->apresentadores = NULL;
-
     return no;
 }
 
-
-// Preenche os dados do programa
-//ideal que preencha na main, ta aqui por enquanto, isso para evitar printf e scanf em funções
 infoProgramas preencherDadosPrograma(void)
 {
     infoProgramas dados;
@@ -73,18 +65,16 @@ infoProgramas preencherDadosPrograma(void)
             break;
     }
 
-    return dados; // retorna os dados preenchidos
+    return dados; 
 }
 
-//inserção de dados na árvore organizado por nome do programa e sem permitir nome repetido
-//pesquisei e vi que é mais eficaz fazer essa verificação na função
 int inserirProgramas(Programas **raizProgramas, Programas *no)
 {
     int cadastrado = 1;
 
     if (*raizProgramas == NULL)
     {
-        *raizProgramas = no; // insere na raiz/folha
+        *raizProgramas = no; 
     }
     else
     {
@@ -103,12 +93,11 @@ int inserirProgramas(Programas **raizProgramas, Programas *no)
             // DUPLICADO: mesmo nomePrograma
             cadastrado = 0;
             free(no);              // evita vazamento
-            // opcional: no = NULL; // não é necessário aqui
+
         }
     }
     return cadastrado;
 }
-
 
 // Procura programa por nome
 Programas *buscarProgramas(Programas *raiz, const char *nomeProgramas)
@@ -133,7 +122,6 @@ Programas *buscarProgramas(Programas *raiz, const char *nomeProgramas)
     return(encontrado); // retorna o Programas encontrado ou NULL se não encontrado
 }
 
-
 void mostrarProgramas(Programas *raiz)
 {
     if (raiz != NULL)
@@ -152,5 +140,132 @@ void mostrarProgramas(Programas *raiz)
     }
 }
 
+/* Remove pelo nome; retorna 1 se removeu, 0 se não encontrou (único return) */
+int removerProgramas(Programas **raizProgramas, const char *nomePrograma)
+{
+    int removido = 0;
 
-//abaixo serão as funções de mostrar
+    if (raizProgramas != NULL && *raizProgramas != NULL && nomePrograma != NULL)
+    {
+        Programas *no = *raizProgramas;
+        int cmp = strcmp(nomePrograma, no->infoProgramas.nomePrograma);
+
+        if (cmp < 0)
+        {
+            /* busca na subárvore esquerda */
+            removido = removerProgramas(&no->esq, nomePrograma);
+        }
+        else if (cmp > 0)
+        {
+            /* busca na subárvore direita */
+            removido = removerProgramas(&no->dir, nomePrograma);
+        }
+        else
+        {
+            /* achou o nó a remover */
+            if (no->esq == NULL && no->dir == NULL)
+            {
+                /* caso 1: folha */
+                free(no);
+                *raizProgramas = NULL;
+                removido = 1;
+            }
+            else if (no->esq == NULL || no->dir == NULL)
+            {
+                /* caso 2: só 1 filho */
+                Programas *filho = (no->esq != NULL) ? no->esq : no->dir;
+                free(no);
+                *raizProgramas = filho;
+                removido = 1;
+            }
+            else
+            {
+                /* caso 3: dois filhos -> usar sucessor em-ordem (menor da direita) */
+                Programas *paiSucc = no;
+                Programas *succ = no->dir;
+
+                while (succ->esq != NULL)
+                {
+                    paiSucc = succ;
+                    succ = succ->esq;
+                }
+
+                /* copia os dados do sucessor para o nó atual */
+                no->infoProgramas = succ->infoProgramas;
+
+                /* retira o sucessor da árvore (ele tem no máx. 1 filho à direita) */
+                if (paiSucc == no)
+                {
+                    paiSucc->dir = succ->dir;   /* sucessor era o filho direito direto */
+                }
+                else
+                {
+                    paiSucc->esq = succ->dir;   /* “puxa” o filho direito do sucessor */
+                }
+
+                free(succ);
+                removido = 1;
+            }
+        }
+    }
+
+    return removido; 
+}
+
+int programasContemApresentador(Programas *raiz, const char *nomeApresentador)
+{
+    int achou = 0;
+
+    if (raiz) {
+        if (strcmp(raiz->infoProgramas.nomeApresentador, nomeApresentador) == 0) {
+            achou = 1;
+        } else {
+            if (programasContemApresentador(raiz->esq, nomeApresentador)) {
+                achou = 1;
+            } else if (programasContemApresentador(raiz->dir, nomeApresentador)) {
+                achou = 1;
+            }
+        }
+    }
+
+    return achou; 
+}
+
+void filtrarProgramasPorPeriodicidadeEHorario(Programas *raiz, Periocidade periodicidade, float horario)
+{
+    if (raiz != NULL)
+    {
+        filtrarProgramasPorPeriodicidadeEHorario(raiz->esq, periodicidade, horario);
+
+        if (raiz->infoProgramas.periocidade == periodicidade &&
+            raiz->infoProgramas.tempoInicio   == horario)
+        {
+            printf("Programa: %s | Inicio: %.2fh | Duracao: %.2fh | Apresentador: %s\n",
+                   raiz->infoProgramas.nomePrograma,
+                   raiz->infoProgramas.tempoInicio,
+                   raiz->infoProgramas.duracao,
+                   raiz->infoProgramas.nomeApresentador);
+        }
+
+        filtrarProgramasPorPeriodicidadeEHorario(raiz->dir, periodicidade, horario);
+    }
+}
+
+void filtrarProgramasPorPeriodicidade(Programas *raiz, Periocidade periodicidade)
+{
+    if (raiz != NULL)
+    {
+        filtrarProgramasPorPeriodicidade(raiz->esq, periodicidade);
+
+        if (raiz->infoProgramas.periocidade == periodicidade)
+        {
+            printf("Programa: %s | Inicio: %.2fh | Duracao: %.2fh | Apresentador: %s\n",
+                   raiz->infoProgramas.nomePrograma,
+                   raiz->infoProgramas.tempoInicio,
+                   raiz->infoProgramas.duracao,
+                   raiz->infoProgramas.nomeApresentador);
+        }
+
+        filtrarProgramasPorPeriodicidade(raiz->dir, periodicidade);
+    }
+}

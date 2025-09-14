@@ -3,25 +3,6 @@
 
 #include "tipos.h"
 
-/*
-Amiga, eu só tirei isso pq eu tinha um mesmo enum, ai como dava muito erro, eu adicionei tipos.h 
-que usa o mesmo enum. deixei aqui só pra tu ver, depois apaga.
-*/
-
-
-// #include "programas.h"
-
-// typedef struct Programas programas;
-
-
-// typedef enum Tipo {
-//     Esporte = 1, 
-//     Noticia,
-//     Entretenimento,
-//     Cultura
-// }Tipo;
-
-// extern char *tipos_char[];
 
 typedef struct Stream Stream;
 typedef struct Apresentadores Apresentadores;
@@ -42,8 +23,9 @@ int inserirCategoria(Categorias **inicio, Categorias *novo);
 void mostrarCategorias(Categorias *inicio);     
 Categorias *buscarCategoria(Categorias *categoria, char *buscarCat);
 void removerCategoria(Categorias **categoria, char *nomeCategoria);
+Categorias* encontrarCategoriaPorTipoNaStream(Stream *stream, Tipo tipo);
 
 /* menu */
-void menuCategoria(Stream *stream, Apresentadores *listaApresentadores);
+void menuCategoria(Stream *stream, Apresentadores *listaApresentadores, Stream *raizStream);
 
 #endif

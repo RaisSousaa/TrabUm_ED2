@@ -10,14 +10,13 @@ Historico* alocarHistorico(const InfoHistorico *dado)
     if (dado != NULL) {
         novo = (Historico*) malloc(sizeof(Historico));
         if (novo != NULL) {
-            novo->info = *dado;  // cópia rasa: nomeStream + datas
+            novo->info = *dado;  
             novo->prox = NULL;
         } else {
             printf("Erro ao alocar Historico.\n");
         }
     }
-
-    return novo; // único return
+    return novo; 
 }
 
 InfoHistorico preencherDadosHistorico(void)
@@ -39,19 +38,9 @@ InfoHistorico preencherDadosHistorico(void)
         dados.dataTermino = 0;
     }
 
-    return dados; // único return
+    return dados;
 }
 
-//criar uma função para se ele já trabalha e finalizar
-/*
-1. pega o no do historico
-2. vai ate o final da lista
-3. difita a data de Termino
-    3.1. Verifica se a tdata de termino é maior ou igual a data de inicio
-        3.1.1 Se não 
-            3.1.1.1 Data invalida, volta para informar data 
-     
-*/
 
 int inserirHistorico(Historico **inicio, const InfoHistorico *dado)
 {
@@ -85,7 +74,7 @@ int inserirHistorico(Historico **inicio, const InfoHistorico *dado)
         }
     }
 
-    return inseriu; // único return
+    return inseriu;
 }
 
 Historico* buscar(Historico *inicio, const char *nome)
@@ -103,7 +92,7 @@ Historico* buscar(Historico *inicio, const char *nome)
         }
     }
 
-    return achou; // único return
+    return achou; 
 }
 
 void imprimirHistorico(const Historico *inicio)
@@ -144,8 +133,6 @@ void imprimirHistorico(const Historico *inicio)
             atual = atual->prox;
         }
     }
-
-    return; // único return
 }
 
 void liberarHistorico(Historico **inicio)
@@ -159,5 +146,18 @@ void liberarHistorico(Historico **inicio)
         }
         *inicio = NULL;
     }
-    return; // único return
+}
+
+void finalizarUltimoHistoricoSeAberto(Historico *hist, int dataTermino)
+{
+    Historico *ultimo = hist;
+
+    if (ultimo) {
+        while (ultimo->prox) {
+            ultimo = ultimo->prox;
+        }
+        if (ultimo->info.dataTermino == 0) {
+            ultimo->info.dataTermino = dataTermino;
+        }
+    }
 }

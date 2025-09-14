@@ -47,9 +47,16 @@ infoProgramas preencherDadosPrograma(void);
 int inserirProgramas(Programas **raizProgramas, Programas *no);
 Programas *buscarProgramas(Programas *raiz, const char *nomeProgramas);
 void mostrarProgramas(Programas *raiz);
-void menuProgramas(Stream *stream ,Categorias *categoriaSelecionada, Apresentadores *listaApresentadores);
-
+int removerProgramas(Programas **raizProgramas, const char *nomePrograma);
+void menuProgramas(Stream *stream, Categorias *categoriaSelecionada,
+                   Apresentadores *listaApresentadores, Stream *raizStream);
 void finalizarUltimoHistoricoSeAberto(Historico *hist, int dataTermino);
 int programasContemApresentador(Programas *raiz, const char *nomeApresentador);
+
+//Funções de perguntas
+void filtrarProgramasPorPeriodicidadeEHorario(Programas *raiz, Periocidade periodicidade, float horario);
+void filtrarProgramasPorPeriodicidade(Programas *raiz, Periocidade periodicidade);
+
+
 
 #endif

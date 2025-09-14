@@ -2,7 +2,6 @@
 #include<stdlib.h>
 #include<string.h>
 #include"apresentadores.h"
-#include"historico.h"
 #include"stream.h"
 
 
@@ -21,13 +20,11 @@ Apresentadores* alocarApresentador(void)
     /* zere/initialize os campos do InfoApresentador */
     novo->info.nome[0]      = '\0';
     novo->info.ondeTrabalha = 0;      /* opcional: enum inválido */
-    novo->info.streamAtual  = NULL;   /* <<< ESSENCIAL */
+    novo->info.streamAtual  = NULL;   
     novo->info.historico    = NULL;
     novo->info.programas    = NULL;
-
     return novo;
 }
-
 
 // Preenche dados de apresentador
 InfoApresentador preencherDadosApresentador(void)
@@ -73,9 +70,6 @@ InfoApresentador preencherDadosApresentador(void)
     return dados;  /* único return */
 }
 
-
-// Lista ordenada dinamicamente duplamente encadeada
-//Inserção ordenada por nome do apresentador
 int inserirApresentador(Apresentadores **inicio, Apresentadores *novo)
 {
     int inseriu   = 0;   /* 1 = inseriu, 0 = não inseriu */
@@ -111,7 +105,6 @@ int inserirApresentador(Apresentadores **inicio, Apresentadores *novo)
                 atual    = atual->prox;
             }
         }
-
         /* se não duplicou e não inseriu dentro do laço, insere no fim */
         if (duplicado == 0 && inseriu == 0) {
             novo->ant  = anterior;
@@ -126,10 +119,8 @@ int inserirApresentador(Apresentadores **inicio, Apresentadores *novo)
         }
     }
 
-    return inseriu;  /* único return */
+    return inseriu; 
 }
-
-
 
 //buscar
 Apresentadores* buscarApresentadores(Apresentadores *inicio, const char *nome_busca, int *encontrou)
@@ -153,8 +144,7 @@ Apresentadores* buscarApresentadores(Apresentadores *inicio, const char *nome_bu
             }
         }
     }
-
-    return resultado; // único ponto de saída
+    return resultado; 
 }
 
 void imprimirApresentadores(Apresentadores *inicio)
@@ -199,4 +189,130 @@ void liberarApresentadores(Apresentadores **inicio)
     } else if (inicio != NULL) {
         *inicio = NULL; // normaliza se já vier NULL
     }
+}
+
+/* Percorre a lista de apresentadores e mostra os que trabalham na 'stream' dada */
+void mostrarApresentadoresPorStream(Apresentadores *lista, const Stream *stream)
+{
+    Apresentadores *atual = lista;
+    int mostrou = 0;
+
+    while (atual != NULL) {
+        if (atual->info.streamAtual == stream) {
+            const char *nomeStream = "(sem stream)";
+            if (stream && stream->info.nomeStream[0] != '\0') {
+                nomeStream = stream->info.nomeStream;
+            }
+            printf("- %s | Stream: %s | Categoria: %d\n",
+                   atual->info.nome, nomeStream, atual->info.ondeTrabalha);
+            mostrou = 1;
+        }
+        atual = atual->prox;
+    }
+
+    if (mostrou == 0) {
+        if (stream && stream->info.nomeStream[0] != '\0') {
+            printf("Nenhum apresentador encontrado para a stream '%s'.\n",
+                   stream->info.nomeStream);
+        } else {
+            printf("Nenhum apresentador encontrado para a stream informada.\n");
+        }
+    }
+}
+
+/* Versão “com nome”: resolve a stream e delega para a função acima */
+void mostrarApresentadoresPorNomeStream(Apresentadores *lista, Stream *raizStream, const char *nomeStream)
+{
+    Stream *stream = NULL;
+
+    if (raizStream != NULL && nomeStream != NULL) {
+        stream = buscarStream(raizStream, nomeStream); /* sua ABB de streams */
+        if (stream == NULL) {
+            printf("Stream '%s' nao encontrada.\n", nomeStream);
+        } else {
+            mostrarApresentadoresPorStream(lista, stream);
+        }
+    } else {
+        printf("Parametros invalidos.\n");
+    }
+}
+
+void mostrarApresentadoresPorCategoria(Apresentadores *lista, Tipo categoria)
+{
+    Apresentadores *atual = lista;
+    int mostrou = 0;
+    static const char *NOME_CATEGORIA[4] = {"Esporte", "Noticia", "Entreterimento", "Cultura"};
+
+    while (atual != NULL) {
+        if (atual->info.ondeTrabalha == categoria) {
+            const char *nomeCat = "(desconhecida)";
+            int idx = (int)categoria - 1; 
+            if (idx >= 0 && idx < 4) {
+                nomeCat = NOME_CATEGORIA[idx];
+            }
+
+            const char *nomeStream = "(sem stream)";
+            if (atual->info.streamAtual && atual->info.streamAtual->info.nomeStream[0] != '\0') {
+                nomeStream = atual->info.streamAtual->info.nomeStream;
+            }
+
+            printf("- %s | Categoria: %s | Stream Atual: %s\n",
+                   atual->info.nome, nomeCat, nomeStream);
+            mostrou = 1;
+        }
+        atual = atual->prox;
+    }
+
+    if (mostrou == 0) {
+        const char *nomeCat = "(categoria)";
+        int idx = (int)categoria - 1; 
+        if (idx >= 0 && idx < 4) {
+            nomeCat = NOME_CATEGORIA[idx];
+        }
+        printf("Nenhum apresentador encontrado para a categoria %s.\n", nomeCat);
+    }
+}
+
+int alterarStreamApresentador(Apresentadores *ap,Stream *novaStream, int dataTerminoAntiga,int dataInicioNova)
+{
+    int ok = 0;
+
+    if (ap != NULL && novaStream != NULL) {
+        /* mesma stream -> nada a fazer */
+        if (ap->info.streamAtual == novaStream) {
+            printf("Apresentador ja esta na stream '%s'.\n", novaStream->info.nomeStream);
+        } else {
+            /* TRAVA 1: destino nao pode ter programa apresentado por ele */
+            if (existeProgramaDoApresentadorNaStream(novaStream, ap->info.nome)) {
+                printf("Nao e possivel transferir: ha programa(s) do apresentador na stream destino '%s'.\n",
+                       novaStream->info.nomeStream);
+            } else {
+                /* (opcional recomendado) TRAVA 2: origem nao pode ter programa ativo do apresentador */
+                if (ap->info.streamAtual != NULL &&
+                    existeProgramaDoApresentadorNaStream(ap->info.streamAtual, ap->info.nome)) {
+                    printf("Nao e possivel transferir: ha programa(s) do apresentador na stream atual '%s'. Remova/altere primeiro.\n",
+                           ap->info.streamAtual->info.nomeStream);
+                } else {
+                    /* fecha histórico anterior (se houver) */
+                    if (ap->info.streamAtual != NULL) {
+                        finalizarUltimoHistoricoSeAberto(ap->info.historico, dataTerminoAntiga);
+                    }
+                    /* abre novo histórico na stream destino */
+                    InfoHistorico h;
+                    strncpy(h.nomeStream, novaStream->info.nomeStream, sizeof h.nomeStream);
+                    h.nomeStream[sizeof h.nomeStream - 1] = '\0';
+                    h.dataInicio  = dataInicioNova;
+                    h.dataTermino = 0;
+                    inserirHistorico(&ap->info.historico, &h);
+
+                    /* efetiva a troca */
+                    ap->info.streamAtual = novaStream;
+                    ok = 1;
+                    printf("Transferencia concluida para a stream '%s'.\n", novaStream->info.nomeStream);
+                }
+            }
+        }
+    }
+
+    return ok;
 }

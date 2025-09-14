@@ -110,7 +110,6 @@ void mostrarCategorias(Categorias *lista)
     }
 }
 
-
 Categorias *buscarCategoria(Categorias *categoria, char *buscarCat)
 {
     Categorias *aux = NULL;
@@ -168,4 +167,24 @@ void removerCategoria(Categorias **categoria, char *nomeCategoria)
         }
     }
     return;
+}
+
+//Função que encontra a categoria de um determinado tipo em uma stream
+//usada no main na opção 5 do menu apresentadores
+Categorias* encontrarCategoriaPorTipoNaStream(Stream *stream, Tipo tipo)
+{
+    Categorias *resultado = NULL;
+
+    if (stream) {
+        Categorias *cat = stream->info.categoria;
+        while (cat != NULL && resultado == NULL) {
+            if (cat->tipo == tipo) {
+                resultado = cat;        // guarda e continua condição encerra
+            } else {
+                cat = cat->prox;
+            }
+        }
+    }
+
+    return resultado; 
 }
