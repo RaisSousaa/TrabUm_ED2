@@ -48,8 +48,7 @@ int inserirProgramas(Programas **raizProgramas, Programas *no);
 Programas *buscarProgramas(Programas *raiz, const char *nomeProgramas);
 void mostrarProgramas(Programas *raiz);
 int removerProgramas(Programas **raizProgramas, const char *nomePrograma);
-void menuProgramas(Stream *stream, Categorias *categoriaSelecionada,
-                   Apresentadores *listaApresentadores, Stream *raizStream);
+void menuProgramas(Stream *stream, Categorias *categoriaSelecionada,Apresentadores **listaApresentadores, Stream *raizStream);
 void finalizarUltimoHistoricoSeAberto(Historico *hist, int dataTermino);
 int programasContemApresentador(Programas *raiz, const char *nomeApresentador);
 

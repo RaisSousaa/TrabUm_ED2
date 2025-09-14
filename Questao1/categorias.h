@@ -26,6 +26,5 @@ void removerCategoria(Categorias **categoria, char *nomeCategoria);
 Categorias* encontrarCategoriaPorTipoNaStream(Stream *stream, Tipo tipo);
 
 /* menu */
-void menuCategoria(Stream *stream, Apresentadores *listaApresentadores, Stream *raizStream);
-
+void menuCategoria(Stream *stream, Apresentadores **listaApresentadores, Stream *raizStream);
 #endif

@@ -8,9 +8,10 @@
 #include"stream.h"
 
 
-void menuCategoria(Stream *stream, Apresentadores *listaApresentadores, Stream *raizStream);
-void menuProgramas(Stream *stream, Categorias *categoriaSelecionada, Apresentadores *listaApresentadores, Stream *raizStream);
+void menuCategoria(Stream *stream, Apresentadores **listaApresentadores, Stream *raizStream);
+void menuProgramas(Stream *stream, Categorias *categoriaSelecionada, Apresentadores **listaApresentadores, Stream *raizStream);
 void menuApresentadores(Apresentadores **listaApresentadores, Stream *raizStream);
+
 
 int main()
 {
@@ -33,10 +34,7 @@ int main()
         printf("3 - Buscar Stream\n");
         printf("4 - Mostrar streams que tem uma determinada categoria\n");
         printf("5 - Mostrar as streams que tem uma determinada categoria\n");
-        //erro, quando cadastro apresentador aqui diz que a stream nao existe
-        //e quando cadastro em apresentador diz que o apresentador ja existe
         printf("6 - [testar]Mostrar todos os apresentadores de uma determinada stream\n");
-        printf("7 - Menu Apresentador\n");
         printf("Escolha uma opcao: ");
         scanf("%d", &opcao);
 
@@ -78,7 +76,7 @@ int main()
                 Stream *auxStream = buscarStream(raizStream, nomeStream);
                 if (auxStream) {
                     //menu para categoria
-                    menuCategoria(auxStream, listaApresentadores, raizStream); // só a stream selecionada
+                    menuCategoria(auxStream, &listaApresentadores, raizStream);
                 } else {
                     printf("Stream não cadastrada!\n");
                 }
@@ -110,17 +108,7 @@ int main()
                 mostrarStreamDoTipoCategoria(raizStream, escolha);
                 break;
             }
-            case 6:{
-                char nome[TAM_STRING];
-                printf("Nome da Stream: ");
-                scanf(" %49[^\n]", nome);
-                mostrarApresentadoresPorNomeStream(listaApresentadores, raizStream, nome);
-                break;
-            }
-            case 7:{
-                menuApresentadores(&listaApresentadores, raizStream);
-                break;
-            }
+            
             default:
                 printf("Opção inválida.\n");
             break;
@@ -131,7 +119,7 @@ int main()
     return 0;
 }
 
-void menuCategoria(Stream *stream, Apresentadores *listaApresentadores, Stream *raizStream)
+void menuCategoria(Stream *stream, Apresentadores **listaApresentadores, Stream *raizStream)
 {
     int opcao = -1;
     Categorias **inicioCat = NULL;
@@ -200,7 +188,7 @@ void menuCategoria(Stream *stream, Apresentadores *listaApresentadores, Stream *
                 scanf(" %49[^\n]", nome);
                 Categorias *achou = buscarCategoria(inicioCat ? *inicioCat : NULL, nome);
                 if (achou) {
-                    printf("Categoria '%s' encontrada! Abrindo menu de Programas...\n", achou->nomeCategoria);
+                    printf("==== Menu Programa da Categoria '%s' ====\n", achou->nomeCategoria);
                     menuProgramas(stream, achou, listaApresentadores, raizStream);
                 } else {
                     printf("Categoria nao cadastrada.\n");
@@ -281,7 +269,8 @@ void menuCategoria(Stream *stream, Apresentadores *listaApresentadores, Stream *
 }
 
 
-void menuProgramas(Stream *stream, Categorias *categoriaSelecionada, Apresentadores *listaApresentadores, Stream *raizStream){
+void menuProgramas(Stream *stream, Categorias *categoriaSelecionada,Apresentadores **listaApresentadores, Stream *raizStream)
+{
     int opcao;
     Programas **raizProgramas = NULL;  /* só definimos depois do NULL-check */
 
@@ -295,8 +284,7 @@ void menuProgramas(Stream *stream, Categorias *categoriaSelecionada, Apresentado
             printf("1 - Cadastrar Programa\n");
             printf("2 - Mostrar Programas\n");
             printf("3 - Buscar Programas\n");
-            printf("4 - Remover Programa\n");
-            printf("5 - Cadastrar Apresentador.\n");
+            printf("4 - Menu Apresentador.\n");
             printf("Escolha uma opcao: ");
             scanf("%d", &opcao);
 
@@ -313,7 +301,7 @@ void menuProgramas(Stream *stream, Categorias *categoriaSelecionada, Apresentado
                 scanf("%49s", nomeApresentador);
 
                 int encontrado = 0;
-                Apresentadores *ap = buscarApresentadores(listaApresentadores, nomeApresentador, &encontrado);
+                Apresentadores *ap = buscarApresentadores(*listaApresentadores, nomeApresentador, &encontrado);
 
                 int ok = 1;
 
@@ -415,20 +403,8 @@ void menuProgramas(Stream *stream, Categorias *categoriaSelecionada, Apresentado
                 }
                 break;
             }
-            case 4: {
-                char nome[TAM_STRING];
-                printf("Nome do programa a remover: ");
-                scanf(" %49[^\n]", nome);
-
-                if (removerProgramas(&categoriaSelecionada->programas, nome)) {
-                    printf("Programa removido.\n");
-                } else {
-                    printf("Programa não encontrado.\n");
-                }
-                break;
-            }
-            case 5:{
-                menuApresentadores(&listaApresentadores, raizStream);
+            case 4:{
+                menuApresentadores(listaApresentadores, raizStream);
                 break;
             }
             default:
@@ -449,19 +425,21 @@ void menuApresentadores(Apresentadores **listaApresentadores, Stream *raizStream
     } else {
         do {
             printf("\n=== Menu Apresentadores ===\n");
-            printf("0 - Voltar\n");
+            printf("0 - Voltar para Programas\n");
             printf("1 - Cadastrar Apresentador\n");
             printf("2 - Listar Apresentadores\n");
             printf("3 - Buscar Apresentador\n");
             printf("4 - [testar]Mostrar todos os apresentadores de um determinada categoria independente da stream que o mesmo trabalha\n");
             printf("5 - [testar]Permita alterar a stream que um apresentador trabalha atualmente. Lembre-se que não pode haver programa naquela stream apresentado pelo apresentador ( programa removido ou alterado o apresentador)\n");
+            printf("6 - [testar]Mostrar todos os apresentadores de uma determinada stream\n");
+        
             printf("Escolha uma opcao: ");
             scanf("%d", &opcao);
 
             switch (opcao)
             {
             case 0: {
-                printf("Voltando para o menu principal.\n");
+                printf("Voltando para o menu Programa.\n");
                 break;
             }
             case 1: {
@@ -582,11 +560,17 @@ void menuApresentadores(Apresentadores **listaApresentadores, Stream *raizStream
                 }
                 break;
             }
+            case 6:{
+                char nome[TAM_STRING];
+                printf("Nome da Stream: ");
+                scanf(" %49[^\n]", nome);
+                mostrarApresentadoresPorNomeStream(*listaApresentadores, raizStream, nome);
+                break;
+            }
             default:
                 printf("Opcao invalida.\n");
                 break;
             }
-
         } while (opcao != 0);
     }
 }
