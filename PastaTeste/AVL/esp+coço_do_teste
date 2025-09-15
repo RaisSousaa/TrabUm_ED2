@@ -1,0 +1,101 @@
+3)(2,0 pontos) Em relação ao exercício 1 e 2 verifique os tempos:
+
+gcc questao_3.c streamAVL.c categoriasAVL.c programasAVL.c -o questao3 -Wall -Wextra -O2
+
+ABB
+gcc questao_3.c stream.c categorias.c programas.c -o questao3 -Wall -Wextra -O2
+
+GERADOR DE CODIGO PARA O ARQUIVO DE DADO SINTETICOS:
+tomando como base os arquivos head crie um codgio que gere o codigo que gere 1 arquivos txt com os valores aletaoios cada um com os dados aleatorios da estrutura Stream, Categoria e Programa. Onde a Categoria esta dentro de Stream, e os Programas estãora dentro de Categorias, comente todas as linhas do cadigo para que seja possivel relaizar o rastreamento do mesmo. 
+As categorias devem seguir a seguites estrturas: 
+
+typedef struct InfoStream {
+    char nomeStream[50];
+    char nomeSite[50];
+    Categorias *categoria;
+} InfoStream;
+
+typedef struct Stream {
+    InfoStream info;
+    struct Stream *esq, *dir;
+    int altura;                 /* AVL */
+} Stream;
+
+typedef struct Categorias {
+    Tipo tipo;
+    char nomeCategoria[50];
+    struct Categorias *prox;
+    Programas *programas;
+} Categorias;
+
+typedef enum Periocidade
+{
+    Diario = 1,
+    Semanal = 2,
+    Mensal = 3
+} Periocidade;
+
+typedef enum Gravacao
+{
+    AoVivo = 1,
+    SobDemanda = 2
+} Gravacao;
+
+typedef struct infoProgramas
+{
+    char nomePrograma[TAM_STRING];
+    Periocidade periocidade;
+    float duracao;
+    float tempoInicio;
+    Gravacao gravacao;
+    char nomeApresentador[50];
+} infoProgramas;
+
+struct Programas
+{
+    struct Programas *esq, *dir;
+    int altura;                 /* AVL */
+    infoProgramas infoProgramas;
+};
+
+
+(a) de inserção de uma determinada quantidade de elementos de um árvore de stream; (a quantidade de
+elementos mínima necessária de acordo com a máquina que está executando o programa.
+    1. Um programa que gera os 3 arquivos com os valores aletaoios de Stream, Categoria e Programa
+    
+
+usando como base a função criada anterioriomente, crie o codigo que sega ose seguige passos, o codigo deve estrutura em funções, e a definição de parametros deve estar de facil acesso, como tambem deve haver comentario para cada função, e quando possivel explicar o funcionamento das funções:
+    1. Relaiza a leitura do arquivo de dados sinteiticos
+    2. Começar a contagem do tempo inicial
+    3. Inserção
+        3.1 Stream usando as funçõs já existente passados nos arquivo de referencia
+            3.1.1 Categoria usando as funçõs já existente passados nos arquivo de referencia
+                3.1.1.1 Programas usando as funçõs já existente passados nos arquivo de referencia
+    4. Contagem do tempo final
+    5. Mostrar o tempo de duração da operação
+    6. Salva tempo inicial
+    7. Acessa a primeira stream do aruqivo
+        7.1 Realia a busca da stream usando as funçõs já existente passados nos arquivo de referencia 
+        7.2 Percorra todas as categorias do arquivo de dados
+            7.2.1 Busca a categoria  usando as funçõs já existente passados nos arquivo de referencia 
+            7.2.2 Percorre a lista de programas no arquivo de dados gerados
+                7.2.2.1 Busca a categoria  usando as funçõs já existente passados nos arquivo de referencia
+    8. Salvar tempo final
+    9. Mostrar duração do intervalo de tempo da ioeração
+
+
+(b) de busca de todos programas de uma categoria de uma determinada stream (no item vii);
+    1. Informar a strem desejada 
+    2. Informar a categoria desejada
+    3. Salvar tempo inicial
+    4. Fazer a busac te todos os programas de uma determinda Stream de uma determinada categoria
+    5. Salvar tempo final
+    6. Mostrar duração do intervalo de tempo da ioeração
+
+Para verificar os tempos de execução pesquise pela função time do C. Insira no código comandos para obter
+o tempo inicial antes de fazer a pesquisa e o tempo final depois de concluir a pesquisa.
+Obs. 1: Lembre-se que não pode haver impressão entre o tempo inicial e o tempo final, pois impressão
+consome muito tempo.
+Obs. 2: Para validar o tempo de busca, o mesmo deve ser repetido 30 vezes. Faça uma média para obter o
+resultado final.
+
