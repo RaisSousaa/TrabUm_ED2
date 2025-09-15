@@ -15,7 +15,7 @@ typedef struct InfoStream {
 typedef struct Stream {
     InfoStream info;
     struct Stream *esq, *dir;
-    int altura;                /* AVL */
+    int altura;                 /* AVL */
 } Stream;
 
 /* públicas (mantidas) */
