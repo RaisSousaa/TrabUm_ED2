@@ -24,10 +24,10 @@ Programas* alocarProgramas(infoProgramas dados)
 infoProgramas preencherDadosPrograma(void)
 {
     infoProgramas dados;
-    printf("Digite o nome do programa: "); scanf("%s", dados.nomePrograma); 
+    printf("Digite o nome do programa: "); scanf(" %49[^\n]", dados.nomePrograma); 
     printf("Digite a duracao do programa (em horas): "); scanf("%f", &dados.duracao); 
     printf("Digite o tempo de inicio do programa (em horas): "); scanf("%f", &dados.tempoInicio); 
-    printf("Digite o nome do apresentador: "); scanf("%s", dados.nomeApresentador); 
+    printf("Digite o nome do apresentador: "); scanf(" %49[^\n]", dados.nomeApresentador); 
 
     int periocidade;
     printf("Escolha a periocidade do programa:\n1. Diario\n2. Semanal\n3. Mensal\n");
