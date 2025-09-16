@@ -177,9 +177,10 @@ void menuCategoria(Stream *stream, Apresentadores **listaApresentadores, Stream 
             // vi) Mostrar todas as categorias cadastradas para uma determinada stream.
             case 2:{
                 printf("\n=== Catalogo de Categorias ===\n");
-                mostrarCategorias(inicioCat ? *inicioCat : NULL);
-                printf("\n");
-                break;
+                if (inicioCat != NULL)
+                    mostrarCategorias(*inicioCat);
+                else
+                    mostrarCategorias(NULL);
             }
             // vii) Mostrar todos os programas de uma determinada categoria de uma determinada stream.
             case 3: {

@@ -4,7 +4,8 @@
 #include "programasAVL.h"
 
 
-static int alturaProg(Programas *no)
+
+static int alturaProg(Programas *no) // retorna altura do nó
 {
     int alt = 0;
     if (no != NULL) {
@@ -13,7 +14,7 @@ static int alturaProg(Programas *no)
     return alt;
 }
 
-static int maiorAlt(int altEsq, int altDir)
+static int maiorAlt(int altEsq, int altDir) // retorna maior entre duas alturas
 {
     int maior = altEsq;
     if (altDir > altEsq) {
@@ -22,7 +23,7 @@ static int maiorAlt(int altEsq, int altDir)
     return maior;
 }
 
-static void attAlturaProg(Programas *no)
+static void atualizaAlt(Programas *no) // atualiza altura do nó
 {
     if (no != NULL) {
         int altEsq = alturaProg(no->esq);
@@ -31,7 +32,7 @@ static void attAlturaProg(Programas *no)
     }
 }
 
-static int fbProg(Programas *no)
+static int fbProg(Programas *no) // fator de balanceamento
 {
     int fb = 0;
     if (no != NULL) {
@@ -40,7 +41,7 @@ static int fbProg(Programas *no)
     return fb;
 }
 
-static Programas* rotDirProg(Programas *raiz)
+static Programas* rotDirProg(Programas *raiz) // rotaçao direita
 {
     Programas *novaRaiz = raiz;
     if (raiz != NULL && raiz->esq != NULL) {
@@ -50,8 +51,8 @@ static Programas* rotDirProg(Programas *raiz)
         filhoEsq->dir = raiz;
         raiz->esq     = subDir;
 
-        attAlturaProg(raiz);
-        attAlturaProg(filhoEsq);
+        atualizaAlt(raiz);
+        atualizaAlt(filhoEsq);
 
         novaRaiz = filhoEsq;
     }
@@ -68,8 +69,8 @@ static Programas* rotEsqProg(Programas *raiz)
         filhoDir->esq = raiz;
         raiz->dir     = subEsq;
 
-        attAlturaProg(raiz);
-        attAlturaProg(filhoDir);
+        atualizaAlt(raiz);
+        atualizaAlt(filhoDir);
 
         novaRaiz = filhoDir;
     }
@@ -83,18 +84,18 @@ static Programas* balancearProg(Programas *raiz)
     if (raiz != NULL) {
         int fb = fbProg(raiz);
 
-        if (fb > 1 && fbProg(raiz->esq) >= 0) 
+        if (fb >= 2 && fbProg(raiz->esq) >= 0) 
         {
             novaRaiz = rotDirProg(raiz);                 /* Esq-Esq */
         } else 
-            if (fb > 1 && fbProg(raiz->esq) < 0) {
+            if (fb >= 2 && fbProg(raiz->esq) < 0) {
             raiz->esq = rotEsqProg(raiz->esq);           /* Esq-Dir */
             novaRaiz  = rotDirProg(raiz);
         } else 
-            if (fb < -1 && fbProg(raiz->dir) <= 0) {
+            if (fb <= -2 && fbProg(raiz->dir) <= 0) {
             novaRaiz = rotEsqProg(raiz);                 /* Dir-Dir */
         } else 
-            if (fb < -1 && fbProg(raiz->dir) > 0) {
+            if (fb <= -2 && fbProg(raiz->dir) > 0) {
             raiz->dir = rotDirProg(raiz->dir);           /* Dir-Esq */
             novaRaiz  = rotEsqProg(raiz);
         }
@@ -102,7 +103,7 @@ static Programas* balancearProg(Programas *raiz)
     return novaRaiz;
 }
 
-static Programas* minNoProg(Programas *no)
+static Programas* minNoProg(Programas *no) // nó com o menor valor (mais à esquerda)
 {
     Programas *atual = no;
     if (atual != NULL) {
@@ -112,7 +113,6 @@ static Programas* minNoProg(Programas *no)
     }
     return atual;
 }
-
 
 Programas* alocarProgramas(infoProgramas dados) 
 {
@@ -196,7 +196,7 @@ int inserirProgramas(Programas **raiz, Programas *no)
 
             if (inseriu == 1 && *raiz != NULL) 
             {
-                attAlturaProg(*raiz);
+                atualizaAlt(*raiz);
                 *raiz = balancearProg(*raiz);
             }
         }
@@ -279,14 +279,13 @@ int removerProgramas(Programas **raiz, const char *nome)
         }
 
         if (removido == 1 && *raiz != NULL) {
-            attAlturaProg(*raiz);
+            atualizaAlt(*raiz);
             *raiz = balancearProg(*raiz);
         }
     }
 
     return removido;
 }
-
 
 int programasContemApresentador(Programas *raiz, const char *nomeAp)
 {
@@ -323,7 +322,7 @@ void filtrarProgramasPorPeriodicidadeEHorario(Programas *raiz, Periocidade p, fl
     }
 }
 
-void filtrarProgramasPorPeriodicidade(Programas *raiz, Periocidade p)
+void filtrarProgramasPorPeriodicidade(Programas *raiz, Periocidade p) // filtra por periodicidade
 {
     if (raiz != NULL) {
         filtrarProgramasPorPeriodicidade(raiz->esq, p);

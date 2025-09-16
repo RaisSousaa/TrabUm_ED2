@@ -5,8 +5,7 @@
 #include "programasAVL.h"
 
 
-
-static int alturaStream(Stream *no)
+static int alturaStream(Stream *no) // retorna altura do nó
 {
     int alt = 0;
     if (no != NULL) {
@@ -15,7 +14,7 @@ static int alturaStream(Stream *no)
     return alt;
 }
 
-static int maiorAlt(int altEsq, int altDir)
+static int maiorAlt(int altEsq, int altDir) // retorna maior entre duas alturas
 {
     int maior = altEsq;
     if (altDir > altEsq) {
@@ -24,7 +23,7 @@ static int maiorAlt(int altEsq, int altDir)
     return maior;
 }
 
-static void attAlturaStream(Stream *no)
+static void atualizaAlt(Stream *no) // atualiza altura do nó
 {
     if (no != NULL) {
         int altEsq = alturaStream(no->esq);
@@ -33,7 +32,7 @@ static void attAlturaStream(Stream *no)
     }
 }
 
-static int fbStream(Stream *no)
+static int fbStream(Stream *no) // fator de balanceamento
 {
     int fb = 0;
     if (no != NULL) {
@@ -52,8 +51,8 @@ static Stream* rotDirStream(Stream *raiz)
         filhoEsq->dir = raiz;
         raiz->esq     = subDir;
 
-        attAlturaStream(raiz);
-        attAlturaStream(filhoEsq);
+        atualizaAlt(raiz);
+        atualizaAlt(filhoEsq);
 
         novaRaiz = filhoEsq;
     }
@@ -70,35 +69,38 @@ static Stream* rotEsqStream(Stream *raiz)
         filhoDir->esq = raiz;
         raiz->dir     = subEsq;
 
-        attAlturaStream(raiz);
-        attAlturaStream(filhoDir);
+        atualizaAlt(raiz);
+        atualizaAlt(filhoDir);
 
         novaRaiz = filhoDir;
     }
     return novaRaiz;
 }
 
-static Stream* balancearStream(Stream *raiz)
+static Stream* balancearStream(Stream *raiz) // balanceamento AVL
 {
     Stream *novaRaiz = raiz;
     if (raiz != NULL) {
         int fb = fbStream(raiz);
 
-        if (fb > 1 && fbStream(raiz->esq) >= 0) {
+        if (fb >= 2 && fbStream(raiz->esq) >= 0) 
+        {
             novaRaiz = rotDirStream(raiz);                /* Esq-Esq */
-        } else if (fb > 1 && fbStream(raiz->esq) < 0) {
+        } else if (fb >= 2 && fbStream(raiz->esq) < 0) 
+        {
             raiz->esq = rotEsqStream(raiz->esq);          /* Esq-Dir */
             novaRaiz  = rotDirStream(raiz);
-        } else if (fb < -1 && fbStream(raiz->dir) <= 0) {
+        } else if (fb <= -2 && fbStream(raiz->dir) <= 0) 
+        {
             novaRaiz = rotEsqStream(raiz);                /* Dir-Dir */
-        } else if (fb < -1 && fbStream(raiz->dir) > 0) {
+        } else if (fb <= -2 && fbStream(raiz->dir) > 0) 
+        {
             raiz->dir = rotDirStream(raiz->dir);          /* Dir-Esq */
             novaRaiz  = rotEsqStream(raiz);
         }
     }
     return novaRaiz;
 }
-
 
 Stream *alocarNoStream(InfoStream stream)
 {
@@ -148,7 +150,7 @@ int InserirStream(Stream **raiz, Stream *no)
                 inseriu = 0;
             }
             if (inseriu == 1 && *raiz != NULL) {
-                attAlturaStream(*raiz);
+                atualizaAlt(*raiz);
                 *raiz = balancearStream(*raiz);
             }
         }
@@ -169,7 +171,7 @@ Stream *buscarStream(Stream *raiz, const char *nome)
             res = buscarStream(raiz->dir, nome);
         }
     }
-    return res;
+    return res; 
 }
 
 Stream* maiorValor(Stream* no)
