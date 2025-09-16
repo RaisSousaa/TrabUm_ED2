@@ -108,7 +108,7 @@ void imprimirHistorico(const Historico *inicio)
 
             // Data início
             if (atual->info.dataInicio == 0) {
-                // 0 não representa "em curso" para início; tratamos como indefinido
+
                 printf("Indefinido");
             } else {
                 int anoI = atual->info.dataInicio / 10000;

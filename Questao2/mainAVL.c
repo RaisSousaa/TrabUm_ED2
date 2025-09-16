@@ -34,7 +34,7 @@ int main()
         printf("3 - Buscar Stream\n");
         printf("4 - Mostrar streams que tem uma determinada categoria\n");
         printf("5 - Mostrar as streams que tem uma determinada categoria\n");
-        printf("6 - [testar]Mostrar todos os apresentadores de uma determinada stream\n");
+        printf("6 - Mostrar todos os apresentadores de uma determinada stream\n");
         printf("Escolha uma opcao: ");
         scanf("%d", &opcao);
 
@@ -144,7 +144,7 @@ void menuCategoria(Stream *stream, Apresentadores **listaApresentadores, Stream 
         printf("4 - Remover Categoria\n");
         printf("5 - Mostrar todos os programas de uma determinada stream que acontecem em um determinado dia e horario\n");
         printf("6 - Mostrar todos os programas de um determinado dia da semana de uma determinada categoria de uma stream\n");
-        printf("7 - [testar]Permita remover um program de uma determinada categoria de uma stream\n");
+        printf("7 - Permita remover um program de uma determinada categoria de uma stream\n");
                 
         printf("Escolha uma opcao: ");
         scanf("%d", &opcao);
@@ -272,7 +272,7 @@ void menuCategoria(Stream *stream, Apresentadores **listaApresentadores, Stream 
 void menuProgramas(Stream *stream, Categorias *categoriaSelecionada,Apresentadores **listaApresentadores, Stream *raizStream)
 {
     int opcao;
-    Programas **raizProgramas = NULL;  /* só definimos depois do NULL-check */
+    Programas **raizProgramas = NULL;  
 
     if (categoriaSelecionada == NULL) {
         printf("Lista categoria vazia.\n");
@@ -429,9 +429,9 @@ void menuApresentadores(Apresentadores **listaApresentadores, Stream *raizStream
             printf("1 - Cadastrar Apresentador\n");
             printf("2 - Listar Apresentadores\n");
             printf("3 - Buscar Apresentador\n");
-            printf("4 - [testar]Mostrar todos os apresentadores de um determinada categoria independente da stream que o mesmo trabalha\n");
-            printf("5 - [testar]Permita alterar a stream que um apresentador trabalha atualmente. Lembre-se que não pode haver programa naquela stream apresentado pelo apresentador ( programa removido ou alterado o apresentador)\n");
-            printf("6 - [testar]Mostrar todos os apresentadores de uma determinada stream\n");
+            printf("4 - Mostrar todos os apresentadores de um determinada categoria independente da stream que o mesmo trabalha\n");
+            printf("5 - Permita alterar a stream que um apresentador trabalha atualmente. Lembre-se que não pode haver programa naquela stream apresentado pelo apresentador ( programa removido ou alterado o apresentador)\n");
+            printf("6 - Mostrar todos os apresentadores de uma determinada stream\n");
         
             printf("Escolha uma opcao: ");
             scanf("%d", &opcao);

@@ -13,13 +13,11 @@ Apresentadores* alocarApresentador(void)
         return NULL;
     }
 
-    /* ligações da lista */
     novo->ant = NULL;
     novo->prox = NULL;
 
-    /* zere/initialize os campos do InfoApresentador */
     novo->info.nome[0]      = '\0';
-    novo->info.ondeTrabalha = 0;      /* opcional: enum inválido */
+    novo->info.ondeTrabalha = 0;      
     novo->info.streamAtual  = NULL;   
     novo->info.historico    = NULL;
     novo->info.programas    = NULL;
@@ -31,9 +29,8 @@ InfoApresentador preencherDadosApresentador(void)
 {
     InfoApresentador dados;
 
-    /* inicialize tudo manualmente */
     dados.nome[0]           = '\0';
-    dados.ondeTrabalha      = 0;     /* ainda não escolhido */
+    dados.ondeTrabalha      = 0;     
     dados.streamAtual       = NULL;
     dados.historico         = NULL;
     dados.programas         = NULL;
@@ -85,10 +82,9 @@ int inserirApresentador(Apresentadores **inicio, Apresentadores *novo)
             int cmp = strcmp(novo->info.nome, atual->info.nome);
 
             if (cmp == 0) {
-                /* nome igual -> não insere */
                 duplicado = 1;
             } else if (cmp < 0) {
-                /* insere antes de 'atual' */
+                /* insere antes de atual */
                 novo->ant  = atual->ant;
                 novo->prox = atual;
                 atual->ant = novo;
@@ -128,7 +124,7 @@ Apresentadores* buscarApresentadores(Apresentadores *inicio, const char *nome_bu
     Apresentadores *resultado = NULL;
 
     if (encontrou != NULL) {
-        *encontrou = 0; // estado inicial: não encontrou
+        *encontrou = 0; 
     }
 
     if (nome_busca != NULL) {
@@ -139,7 +135,6 @@ Apresentadores* buscarApresentadores(Apresentadores *inicio, const char *nome_bu
                     *encontrou = 1;
                 }
             } else {
-                // chama recursivamente no próximo nó
                 resultado = buscarApresentadores(inicio->prox, nome_busca, encontrou);
             }
         }
@@ -175,15 +170,12 @@ void imprimirApresentadores(Apresentadores *inicio)
 void liberarApresentadores(Apresentadores **inicio)
 {
     if (inicio != NULL && *inicio != NULL) {
-        // libera primeiro o histórico do nó atual (se houver)
         if ((*inicio)->info.historico != NULL) {
             liberarHistorico(&(*inicio)->info.historico);
         }
 
-        // libera recursivamente a cauda
         liberarApresentadores(&(*inicio)->prox);
 
-        // libera o nó atual
         free(*inicio);
         *inicio = NULL; // garante que o ponteiro fique nulo ao voltar
     } else if (inicio != NULL) {
@@ -191,7 +183,6 @@ void liberarApresentadores(Apresentadores **inicio)
     }
 }
 
-/* Percorre a lista de apresentadores e mostra os que trabalham na 'stream' dada */
 void mostrarApresentadoresPorStream(Apresentadores *lista, const Stream *stream)
 {
     Apresentadores *atual = lista;
@@ -278,7 +269,7 @@ int alterarStreamApresentador(Apresentadores *ap,Stream *novaStream, int dataTer
     int ok = 0;
 
     if (ap != NULL && novaStream != NULL) {
-        /* mesma stream -> nada a fazer */
+        /* mesma stream, nada a fazer */
         if (ap->info.streamAtual == novaStream) {
             printf("Apresentador ja esta na stream '%s'.\n", novaStream->info.nomeStream);
         } else {
@@ -287,13 +278,13 @@ int alterarStreamApresentador(Apresentadores *ap,Stream *novaStream, int dataTer
                 printf("Nao e possivel transferir: ha programa(s) do apresentador na stream destino '%s'.\n",
                        novaStream->info.nomeStream);
             } else {
-                /* (opcional recomendado) TRAVA 2: origem nao pode ter programa ativo do apresentador */
+                /*TRAVA 2: origem nao pode ter programa ativo do apresentador */
                 if (ap->info.streamAtual != NULL &&
                     existeProgramaDoApresentadorNaStream(ap->info.streamAtual, ap->info.nome)) {
                     printf("Nao e possivel transferir: ha programa(s) do apresentador na stream atual '%s'. Remova/altere primeiro.\n",
                            ap->info.streamAtual->info.nomeStream);
                 } else {
-                    /* fecha histórico anterior (se houver) */
+                    /* fecha histórico anterior */
                     if (ap->info.streamAtual != NULL) {
                         finalizarUltimoHistoricoSeAberto(ap->info.historico, dataTerminoAntiga);
                     }

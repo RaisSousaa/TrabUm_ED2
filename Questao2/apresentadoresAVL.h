@@ -60,9 +60,6 @@ void liberarHistorico(Historico **inicio);
 void mostrarApresentadoresPorStream(Apresentadores *lista, const Stream *stream);
 void mostrarApresentadoresPorNomeStream(Apresentadores *lista, Stream *raizStream, const char *nomeStream);
 void mostrarApresentadoresPorCategoria(Apresentadores *lista, Tipo categoria);
-int alterarStreamApresentador(Apresentadores *ap,
-                              Stream *novaStream,
-                              int dataTerminoAntiga,
-                              int dataInicioNova);
+int alterarStreamApresentador(Apresentadores *ap, Stream *novaStream, int dataTerminoAntiga, int dataInicioNova);
 
 #endif

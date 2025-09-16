@@ -3,7 +3,7 @@
 #include <string.h>
 #include "programasAVL.h"
 
-/* ===== Helpers AVL (escopo local) ===== */
+
 static int alturaProg(Programas *no)
 {
     int alt = 0;
@@ -83,14 +83,18 @@ static Programas* balancearProg(Programas *raiz)
     if (raiz != NULL) {
         int fb = fbProg(raiz);
 
-        if (fb > 1 && fbProg(raiz->esq) >= 0) {
+        if (fb > 1 && fbProg(raiz->esq) >= 0) 
+        {
             novaRaiz = rotDirProg(raiz);                 /* Esq-Esq */
-        } else if (fb > 1 && fbProg(raiz->esq) < 0) {
+        } else 
+            if (fb > 1 && fbProg(raiz->esq) < 0) {
             raiz->esq = rotEsqProg(raiz->esq);           /* Esq-Dir */
             novaRaiz  = rotDirProg(raiz);
-        } else if (fb < -1 && fbProg(raiz->dir) <= 0) {
+        } else 
+            if (fb < -1 && fbProg(raiz->dir) <= 0) {
             novaRaiz = rotEsqProg(raiz);                 /* Dir-Dir */
-        } else if (fb < -1 && fbProg(raiz->dir) > 0) {
+        } else 
+            if (fb < -1 && fbProg(raiz->dir) > 0) {
             raiz->dir = rotDirProg(raiz->dir);           /* Dir-Esq */
             novaRaiz  = rotEsqProg(raiz);
         }
@@ -109,7 +113,6 @@ static Programas* minNoProg(Programas *no)
     return atual;
 }
 
-/* ===== Públicas ===== */
 
 Programas* alocarProgramas(infoProgramas dados) 
 {
@@ -171,31 +174,34 @@ infoProgramas preencherDadosPrograma(void)
 
 int inserirProgramas(Programas **raiz, Programas *no)
 {
-    int ok = 0;
+    int inseriu = 0;
 
-    if (raiz != NULL && no != NULL) {
-        if (*raiz == NULL) {
+    if (raiz != NULL && no != NULL) 
+    {
+        if (*raiz == NULL) 
+        {
             *raiz = no;
-            ok = 1;
+            inseriu = 1;
         } else {
             int cmp = strcmp(no->infoProgramas.nomePrograma, (*raiz)->infoProgramas.nomePrograma);
             if (cmp < 0) {
-                ok = inserirProgramas(&(*raiz)->esq, no);
+                inseriu = inserirProgramas(&(*raiz)->esq, no);
             } else if (cmp > 0) {
-                ok = inserirProgramas(&(*raiz)->dir, no);
+                inseriu = inserirProgramas(&(*raiz)->dir, no);
             } else {
                 /* duplicado */
                 free(no);
-                ok = 0;
+                inseriu = 0;
             }
 
-            if (ok == 1 && *raiz != NULL) {
+            if (inseriu == 1 && *raiz != NULL) 
+            {
                 attAlturaProg(*raiz);
                 *raiz = balancearProg(*raiz);
             }
         }
     }
-    return ok;
+    return inseriu;
 }
 
 Programas *buscarProgramas(Programas *raiz, const char *nome)
@@ -251,14 +257,20 @@ int removerProgramas(Programas **raiz, const char *nome)
                 *raiz = NULL;
                 removido = 1;
             } else if (no->esq == NULL || no->dir == NULL) {
-                Programas *filho = (no->esq != NULL) ? no->esq : no->dir;
+                /* exatamente 1 filho */
+                Programas *filho;
+                if (no->esq != NULL) {
+                    filho = no->esq;
+                } else {
+                    filho = no->dir;
+                }
                 free(no);
                 *raiz = filho;
                 removido = 1;
             } else {
-                /* substitui pelo menor da subárvore direita (succ) */
+                /* dois filhos: substitui pelo menor da subárvore direita (sucessor) */
                 Programas *succ = minNoProg(no->dir);
-                infoProgramas backup = succ->infoProgramas;
+                infoProgramas backup = succ->infoProgramas;   /* copia dados */
                 removido = removerProgramas(&no->dir, succ->infoProgramas.nomePrograma);
                 if (removido) {
                     (*raiz)->infoProgramas = backup;
@@ -271,8 +283,10 @@ int removerProgramas(Programas **raiz, const char *nome)
             *raiz = balancearProg(*raiz);
         }
     }
-    return removido; 
+
+    return removido;
 }
+
 
 int programasContemApresentador(Programas *raiz, const char *nomeAp)
 {

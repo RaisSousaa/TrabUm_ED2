@@ -49,8 +49,7 @@ void mostrarProgramas(Programas *raiz);
 int removerProgramas(Programas **raizProgramas, const char *nomePrograma);
 
 /* outras que seu projeto referencia (mantidas) */
-void menuProgramas(Stream *stream, Categorias *categoriaSelecionada,
-                   Apresentadores **listaApresentadores, Stream *raizStream);
+void menuProgramas(Stream *stream, Categorias *categoriaSelecionada, Apresentadores **listaApresentadores, Stream *raizStream);
 void finalizarUltimoHistoricoSeAberto(Historico *hist, int dataTermino);
 
 /* utilitárias de consulta/filtro já existentes */

@@ -99,7 +99,6 @@ static Stream* balancearStream(Stream *raiz)
     return novaRaiz;
 }
 
-/* ===== Públicas ===== */
 
 Stream *alocarNoStream(InfoStream stream)
 {
@@ -363,11 +362,8 @@ int removerProgramaDaCategoria(Categorias *cat, const char *nomeProg)
     return ok;
 }
 
-/* Versão completa: acha STREAM -> CATEGORIA -> remove PROGRAMA */
-int removerProgramaDeCategoriaDaStream(Stream *raizStream,
-                                       const char *nomeStream,
-                                       const char *nomeCategoria,
-                                       const char *nomePrograma)
+/* acha STREAM -> CATEGORIA -> remove PROGRAMA */
+int removerProgramaDeCategoriaDaStream(Stream *raizStream, const char *nomeStream,const char *nomeCategoria, const char *nomePrograma)
 {
     int ok = 0;
     if (raizStream != NULL && nomeStream != NULL &&
