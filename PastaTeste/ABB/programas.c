@@ -24,10 +24,10 @@ Programas* alocarProgramas(infoProgramas dados)
 infoProgramas preencherDadosPrograma(void)
 {
     infoProgramas dados;
-    printf("Digite o nome do programa: "); scanf("%s", dados.nomePrograma); // recebe o nome do programa
-    printf("Digite a duracao do programa (em horas): "); scanf("%f", &dados.duracao); // recebe a duração
-    printf("Digite o tempo de inicio do programa (em horas): "); scanf("%f", &dados.tempoInicio); // recebe o tempo de início
-    printf("Digite o nome do apresentador: "); scanf("%s", dados.nomeApresentador); // recebe o nome do apresentador
+    printf("Digite o nome do programa: "); scanf("%s", dados.nomePrograma); 
+    printf("Digite a duracao do programa (em horas): "); scanf("%f", &dados.duracao); 
+    printf("Digite o tempo de inicio do programa (em horas): "); scanf("%f", &dados.tempoInicio); 
+    printf("Digite o nome do apresentador: "); scanf("%s", dados.nomeApresentador); 
 
     int periocidade;
     printf("Escolha a periocidade do programa:\n1. Diario\n2. Semanal\n3. Mensal\n");
@@ -140,7 +140,6 @@ void mostrarProgramas(Programas *raiz)
     }
 }
 
-/* Remove pelo nome; retorna 1 se removeu, 0 se não encontrou (único return) */
 int removerProgramas(Programas **raizProgramas, const char *nomePrograma)
 {
     int removido = 0;

@@ -24,9 +24,9 @@
 #include <string.h>
 #include <time.h>
 
-#include "streamAVL.h"
-#include "categoriasAVL.h"
-#include "programasAVL.h"
+#include "stream.h"
+#include "categorias.h"
+#include "programas.h"
 
 /* =======================
  * PARÂMETROS DE FÁCIL ACESSO
