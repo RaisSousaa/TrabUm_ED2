@@ -49,7 +49,7 @@ void menuApresentadores(Apresentadores **listaApresentadores, Stream *raizStream
 
 // ===== Funções de histórico ======
 Historico* alocarHistorico(const InfoHistorico *dado);
-InfoHistorico preencherDadosHistorico(void);     // <<< ADICIONADO AQUI
+InfoHistorico preencherDadosHistorico(void);     
 int inserirHistorico(Historico **inicio, const InfoHistorico *dado);
 Historico* buscar(Historico *inicio, const char *nome);
 void imprimirHistorico(const Historico *inicio);
