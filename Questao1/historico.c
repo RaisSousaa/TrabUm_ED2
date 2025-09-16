@@ -19,6 +19,7 @@ Historico* alocarHistorico(const InfoHistorico *dado)
     return novo; 
 }
 
+//analisar se usa
 InfoHistorico preencherDadosHistorico(void)
 {
     InfoHistorico dados;
@@ -29,10 +30,8 @@ InfoHistorico preencherDadosHistorico(void)
     printf("Digite a data de início (AAAAMMDD): ");
     scanf("%d", &dados.dataInicio);
 
-    // Digite a data de término (AAAAMMDD ou 0 para em curso)
     dados.dataTermino = 0;
 
-    // Validação simples: se término != 0 e menor que início, corrige para "em curso"
     if (dados.dataTermino != 0 && dados.dataTermino < dados.dataInicio) {
         printf("Data término anterior à início. Corrigindo para 0 (em curso).\n");
         dados.dataTermino = 0;

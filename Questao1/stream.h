@@ -34,10 +34,7 @@ void mostrarStreamDoTipoCategoria(Stream *stream, int nometipocategoria);
 void mostrarProgramasStreamPorPeriodicidadeEHorario(Stream *stream, Periocidade p, float h);
 void mostrarProgramasDaCategoriaPorPeriodicidade(Stream *stream, const char *nomeCategoria, Periocidade periodicidade);
 int removerProgramaDaCategoria(Categorias *categoria, const char *nomePrograma);
-int removerProgramaDeCategoriaDaStream(Stream *raizStream,
-                                       const char *nomeStream,
-                                       const char *nomeCategoria,
-                                       const char *nomePrograma);
+int removerProgramaDeCategoriaDaStream(Stream *raizStream, const char *nomeStream, const char *nomeCategoria, const char *nomePrograma);
 
 int existeProgramaDoApresentadorNaStream(Stream *stream, const char *nomeApresentador);
 

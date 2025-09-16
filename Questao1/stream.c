@@ -116,7 +116,6 @@ void mostrarCategoriasStream(Stream *raiz, char *nomeStream)
         }
     }
 
-    return;
 }
 
 
@@ -169,8 +168,6 @@ void mostrarStreamDeCategoria(Stream *raiz, char *nomeDaCategoria)
         // percorre direita
         mostrarStreamDeCategoria(raiz->dir,  nomeDaCategoria);
     }
-
-    return;  // único return
 }
 
 
@@ -204,8 +201,6 @@ void mostrarStreamDoTipoCategoria(Stream *stream, int nometipocategoria)
         mostrarStreamDoTipoCategoria(stream->esq, nometipocategoria);
         mostrarStreamDoTipoCategoria(stream->dir, nometipocategoria);
     }
-
-    return;
 }
 
 // v) Mostrar todas as streams cadastradas.
@@ -317,10 +312,7 @@ int removerProgramaDaCategoria(Categorias *categoria, const char *nomePrograma)
 }
 
 /* Versão completa: acha STREAM -> acha CATEGORIA -> remove PROGRAMA */
-int removerProgramaDeCategoriaDaStream(Stream *raizStream,
-                                       const char *nomeStream,
-                                       const char *nomeCategoria,
-                                       const char *nomePrograma)
+int removerProgramaDeCategoriaDaStream(Stream *raizStream, const char *nomeStream, const char *nomeCategoria, const char *nomePrograma)
 {
     int ok = 0;
 
@@ -343,7 +335,6 @@ int removerProgramaDeCategoriaDaStream(Stream *raizStream,
             }
         }
     }
-
     return ok; 
 }
 
@@ -365,7 +356,6 @@ int existeProgramaDoApresentadorNaStream(Stream *stream, const char *nomeApresen
             }
         }
     }
-
     return existe; 
 }
 

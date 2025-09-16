@@ -17,9 +17,10 @@ Apresentadores* alocarApresentador(void)
     novo->ant = NULL;
     novo->prox = NULL;
 
-    /* zere/initialize os campos do InfoApresentador */
+    // inicializa InfoApresentador
     novo->info.nome[0]      = '\0';
-    novo->info.ondeTrabalha = 0;      /* opcional: enum inválido */
+    novo->info.ondeTrabalha = 0;      //enum inválido 
+
     novo->info.streamAtual  = NULL;   
     novo->info.historico    = NULL;
     novo->info.programas    = NULL;
@@ -31,9 +32,9 @@ InfoApresentador preencherDadosApresentador(void)
 {
     InfoApresentador dados;
 
-    /* inicialize tudo manualmente */
+    /* inicializando manualmente */
     dados.nome[0]           = '\0';
-    dados.ondeTrabalha      = 0;     /* ainda não escolhido */
+    dados.ondeTrabalha      = 0;     
     dados.streamAtual       = NULL;
     dados.historico         = NULL;
     dados.programas         = NULL;
@@ -67,7 +68,7 @@ InfoApresentador preencherDadosApresentador(void)
             break;
     }
 
-    return dados;  /* único return */
+    return dados;  
 }
 
 int inserirApresentador(Apresentadores **inicio, Apresentadores *novo)
@@ -85,10 +86,10 @@ int inserirApresentador(Apresentadores **inicio, Apresentadores *novo)
             int cmp = strcmp(novo->info.nome, atual->info.nome);
 
             if (cmp == 0) {
-                /* nome igual -> não insere */
+                /* nome igual , não insere */
                 duplicado = 1;
             } else if (cmp < 0) {
-                /* insere antes de 'atual' */
+                /* insere antes de atual */
                 novo->ant  = atual->ant;
                 novo->prox = atual;
                 atual->ant = novo;
@@ -111,7 +112,7 @@ int inserirApresentador(Apresentadores **inicio, Apresentadores *novo)
             novo->prox = NULL;
 
             if (anterior == NULL) {
-                *inicio = novo;      /* lista vazia */
+                *inicio = novo;      
             } else {
                 anterior->prox = novo;
             }
@@ -144,7 +145,7 @@ Apresentadores* buscarApresentadores(Apresentadores *inicio, const char *nome_bu
             }
         }
     }
-    return resultado; 
+    return resultado; //retorna NULL se não encontrou
 }
 
 void imprimirApresentadores(Apresentadores *inicio)
@@ -175,12 +176,12 @@ void imprimirApresentadores(Apresentadores *inicio)
 void liberarApresentadores(Apresentadores **inicio)
 {
     if (inicio != NULL && *inicio != NULL) {
-        // libera primeiro o histórico do nó atual (se houver)
+        // libera primeiro o histórico do nó atual
         if ((*inicio)->info.historico != NULL) {
             liberarHistorico(&(*inicio)->info.historico);
         }
 
-        // libera recursivamente a cauda
+        // libera recursivamente  cauda
         liberarApresentadores(&(*inicio)->prox);
 
         // libera o nó atual
@@ -191,7 +192,7 @@ void liberarApresentadores(Apresentadores **inicio)
     }
 }
 
-/* Percorre a lista de apresentadores e mostra os que trabalham na 'stream' dada */
+
 void mostrarApresentadoresPorStream(Apresentadores *lista, const Stream *stream)
 {
     Apresentadores *atual = lista;
@@ -220,7 +221,7 @@ void mostrarApresentadoresPorStream(Apresentadores *lista, const Stream *stream)
     }
 }
 
-/* Versão “com nome”: resolve a stream e delega para a função acima */
+
 void mostrarApresentadoresPorNomeStream(Apresentadores *lista, Stream *raizStream, const char *nomeStream)
 {
     Stream *stream = NULL;
@@ -278,7 +279,7 @@ int alterarStreamApresentador(Apresentadores *ap,Stream *novaStream, int dataTer
     int ok = 0;
 
     if (ap != NULL && novaStream != NULL) {
-        /* mesma stream -> nada a fazer */
+        /* mesma stream, não faz nada */
         if (ap->info.streamAtual == novaStream) {
             printf("Apresentador ja esta na stream '%s'.\n", novaStream->info.nomeStream);
         } else {
@@ -287,7 +288,7 @@ int alterarStreamApresentador(Apresentadores *ap,Stream *novaStream, int dataTer
                 printf("Nao e possivel transferir: ha programa(s) do apresentador na stream destino '%s'.\n",
                        novaStream->info.nomeStream);
             } else {
-                /* (opcional recomendado) TRAVA 2: origem nao pode ter programa ativo do apresentador */
+                /* TRAVA 2: origem nao pode ter programa ativo do apresentador */
                 if (ap->info.streamAtual != NULL &&
                     existeProgramaDoApresentadorNaStream(ap->info.streamAtual, ap->info.nome)) {
                     printf("Nao e possivel transferir: ha programa(s) do apresentador na stream atual '%s'. Remova/altere primeiro.\n",
@@ -299,13 +300,14 @@ int alterarStreamApresentador(Apresentadores *ap,Stream *novaStream, int dataTer
                     }
                     /* abre novo histórico na stream destino */
                     InfoHistorico h;
+                    /*copia os dados para nova historico*/
                     strncpy(h.nomeStream, novaStream->info.nomeStream, sizeof h.nomeStream);
                     h.nomeStream[sizeof h.nomeStream - 1] = '\0';
                     h.dataInicio  = dataInicioNova;
                     h.dataTermino = 0;
                     inserirHistorico(&ap->info.historico, &h);
 
-                    /* efetiva a troca */
+                    /* ok troca */
                     ap->info.streamAtual = novaStream;
                     ok = 1;
                     printf("Transferencia concluida para a stream '%s'.\n", novaStream->info.nomeStream);

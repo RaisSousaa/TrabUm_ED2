@@ -429,9 +429,9 @@ void menuApresentadores(Apresentadores **listaApresentadores, Stream *raizStream
             printf("1 - Cadastrar Apresentador\n");
             printf("2 - Listar Apresentadores\n");
             printf("3 - Buscar Apresentador\n");
-            printf("4 - [testar]Mostrar todos os apresentadores de um determinada categoria independente da stream que o mesmo trabalha\n");
-            printf("5 - [testar]Permita alterar a stream que um apresentador trabalha atualmente. Lembre-se que não pode haver programa naquela stream apresentado pelo apresentador ( programa removido ou alterado o apresentador)\n");
-            printf("6 - [testar]Mostrar todos os apresentadores de uma determinada stream\n");
+            printf("4 - Mostrar todos os apresentadores de um determinada categoria independente da stream que o mesmo trabalha\n");
+            printf("5 - Permita alterar a stream que um apresentador trabalha atualmente. Lembre-se que não pode haver programa naquela stream apresentado pelo apresentador ( programa removido ou alterado o apresentador)\n");
+            printf("6 - Mostrar todos os apresentadores de uma determinada stream\n");
         
             printf("Escolha uma opcao: ");
             scanf("%d", &opcao);

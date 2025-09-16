@@ -81,18 +81,20 @@ int inserirCategoria(Categorias **lista, Categorias *no)
 Categorias *alocarMemoriaNo()
 {
     Categorias *no = (Categorias *) malloc(sizeof(Categorias));
-    if (no == NULL)
-    {
-        printf("Erro ao alocar\n");
-        exit(EXIT_FAILURE);
-    }
-    else
+
+    if (no != NULL)
     {
         no->prox = NULL;
         no->programas = NULL;
     }
-    return no;
+    else
+    {
+        printf("Erro ao alocar\n");
+    }
+
+    return no; 
 }
+
 
 void mostrarCategorias(Categorias *lista)
 {

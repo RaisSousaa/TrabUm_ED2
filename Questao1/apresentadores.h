@@ -10,7 +10,7 @@ typedef struct Historico Historico;
 
 
 typedef struct InfoApresentador {
-    Tipo ondeTrabalha;         // usa o mesmo enum
+    Tipo ondeTrabalha;         // usa o mesmo enum de categoria, então tipo.h é usado
     char nome[TAM_STRING];
     Stream *streamAtual;
     Historico *historico;
@@ -29,7 +29,7 @@ typedef struct Apresentadores
 typedef struct InfoHistorico
 {
     char nomeStream[50];
-    int dataInicio, dataTermino; // AAAAMMDD; dataTermino == 0 "Em curso"
+    int dataInicio, dataTermino; // AAAAMMDD; dataTermino == 0 "em andamento"
 } InfoHistorico;
 
 typedef struct Historico
@@ -60,9 +60,6 @@ void liberarHistorico(Historico **inicio);
 void mostrarApresentadoresPorStream(Apresentadores *lista, const Stream *stream);
 void mostrarApresentadoresPorNomeStream(Apresentadores *lista, Stream *raizStream, const char *nomeStream);
 void mostrarApresentadoresPorCategoria(Apresentadores *lista, Tipo categoria);
-int alterarStreamApresentador(Apresentadores *ap,
-                              Stream *novaStream,
-                              int dataTerminoAntiga,
-                              int dataInicioNova);
+int alterarStreamApresentador(Apresentadores *ap, Stream *novaStream, int dataTerminoAntiga, int dataInicioNova);
 
 #endif
