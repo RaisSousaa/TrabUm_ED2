@@ -34,7 +34,6 @@ int main()
         printf("3 - Buscar Stream\n");
         printf("4 - Mostrar streams que tem uma determinada categoria\n");
         printf("5 - Mostrar as streams que tem uma determinada categoria\n");
-        printf("6 - Mostrar todos os apresentadores de uma determinada stream\n");
         printf("Escolha uma opcao: ");
         scanf("%d", &opcao);
 
