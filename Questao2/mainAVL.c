@@ -141,8 +141,8 @@ void menuCategoria(Stream *stream, Apresentadores **listaApresentadores, Stream 
         printf("2 - Mostrar Categorias\n");
         printf("3 - Buscar Categoria\n");
         printf("4 - Remover Categoria\n");
-        printf("5 - Mostrar todos os programas de uma determinada stream que acontecem em um determinado dia e horario\n");
-        printf("6 - Mostrar todos os programas de um determinado dia da semana de uma determinada categoria de uma stream\n");
+        printf("5 - Mostrar todos os programas de uma determinada stream que acontecem em um determinado periodo e horario\n");
+        printf("6 - Mostrar todos os programas de um determinado periodo da semana de uma determinada categoria de uma stream\n");
         printf("7 - Permita remover um program de uma determinada categoria de uma stream\n");
                 
         printf("Escolha uma opcao: ");
@@ -430,7 +430,7 @@ void menuApresentadores(Apresentadores **listaApresentadores, Stream *raizStream
             printf("2 - Listar Apresentadores\n");
             printf("3 - Buscar Apresentador\n");
             printf("4 - Mostrar todos os apresentadores de um determinada categoria independente da stream que o mesmo trabalha\n");
-            printf("5 - Permita alterar a stream que um apresentador trabalha atualmente. Lembre-se que não pode haver programa naquela stream apresentado pelo apresentador ( programa removido ou alterado o apresentador)\n");
+            printf("5 - Permita alterar a stream que um apresentador trabalha atualmente. Lembre-se que não pode haver programa naquela stream apresentado pelo apresentador\n");
             printf("6 - Mostrar todos os apresentadores de uma determinada stream\n");
         
             printf("Escolha uma opcao: ");
