@@ -23,6 +23,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <strings.h>  // para strncasecmp
+
 
 #include "stream.h"
 #include "categorias.h"
@@ -31,7 +33,7 @@
 /* =======================
  * PARÂMETROS DE FÁCIL ACESSO
  * ======================= */
-static const char *CAMINHO_ARQ = "dados_streams.txt";
+static const char *CAMINHO_ARQ = "/home/sthefany/Documentos/5Periodo/EDII/TrabUm_ED2/ABB/TrabUm_ED2/PastaTeste/AVL/dados_streams.txt";
 static const int   MOSTRAR_LOG_PARSER = 0;
 static const int   MOSTRAR_RESUMO     = 1;
 
@@ -355,7 +357,7 @@ int main(void)
     if (MOSTRAR_RESUMO) {
         printf("\nPrimeira stream identificada: %s\n", primeiraStream[0] ? primeiraStream : "(nenhuma)");
         printf("Resumo (in-ordem):\n");
-        imprimirInOrdem(raizStreams);                                    /* :contentReference[oaicite:19]{index=19} */
+      //  imprimirInOrdem(raizStreams);                                    /* :contentReference[oaicite:19]{index=19} */
     }
 
     /* (6–9) buscas */

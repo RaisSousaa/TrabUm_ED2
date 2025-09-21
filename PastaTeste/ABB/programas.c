@@ -7,19 +7,19 @@
 // Função para alocar memória para um novo programa
 Programas* alocarProgramas(infoProgramas dados) 
 {
-    Programas *no = NULL;
+    Programas *no;
+    no = (Programas*) malloc(sizeof(Programas));
 
-    no = (Programas*) malloc (sizeof(Programas));
-    if (no == NULL) 
-    {
+    if (no == NULL) {
         printf("Erro ao alocar memoria para Programas.\n");
-        
+    } else {
+        no->esq = NULL;
+        no->dir = NULL;
+        no->infoProgramas = dados;
     }
-    no->esq = NULL;
-    no->dir = NULL;
-    no->infoProgramas = dados;
-    return no;
+    return no; 
 }
+
 
 infoProgramas preencherDadosPrograma(void)
 {
@@ -92,7 +92,7 @@ int inserirProgramas(Programas **raizProgramas, Programas *no)
         {
             // DUPLICADO: mesmo nomePrograma
             cadastrado = 0;
-            free(no);              // evita vazamento
+            free(no);              // evitar vazamento
 
         }
     }
@@ -179,7 +179,7 @@ int removerProgramas(Programas **raizProgramas, const char *nomePrograma)
             }
             else
             {
-                /* caso 3: dois filhos -> usar sucessor em-ordem (menor da direita) */
+                /* caso 3: dois filhos (menor da direita) */
                 Programas *paiSucc = no;
                 Programas *succ = no->dir;
 
@@ -192,14 +192,14 @@ int removerProgramas(Programas **raizProgramas, const char *nomePrograma)
                 /* copia os dados do sucessor para o nó atual */
                 no->infoProgramas = succ->infoProgramas;
 
-                /* retira o sucessor da árvore (ele tem no máx. 1 filho à direita) */
+                /* retira o sucessor da árvore  */
                 if (paiSucc == no)
                 {
                     paiSucc->dir = succ->dir;   /* sucessor era o filho direito direto */
                 }
                 else
                 {
-                    paiSucc->esq = succ->dir;   /* “puxa” o filho direito do sucessor */
+                    paiSucc->esq = succ->dir;   /* puxa o filho direito do sucessor */
                 }
 
                 free(succ);
